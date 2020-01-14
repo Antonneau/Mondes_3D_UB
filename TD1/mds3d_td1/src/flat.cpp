@@ -15,7 +15,9 @@ public:
         if(!(hit.foundIntersection())){
             return scene->backgroundColor;
         } else {
-            // Recupérer la couleur de l'objet
+            Shape *tmpShape = hit.shape;
+            Material *tmpMat = tmpShape->material();
+            return tmpMat->ambiantColor();
         }
         return Color3f(0.f);
     }
