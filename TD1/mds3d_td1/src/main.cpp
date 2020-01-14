@@ -20,6 +20,18 @@ void render(Scene* scene, ImageBlock* result, std::string outputName, bool* done
 
     /// TODO:
     ///  1. iterate over the image pixels
+    uint camWidth = camera->vpWidth();
+    uint camHeight = camera->vpHeight();
+    for(uint y = 0; y < camHeight; y++){
+        for(uint x = 0; x < camWidth; x++){
+            // Printing the coordinates of the current pixel
+            // std::cout << "Iterating on pixel : " << std::to_string(x) << "," << std::to_string(y) << std::endl;
+            Point3f pixOrig = camera->position();
+            Vector3f pixDir = camF + 2*(x/camWidth - 0,5)*camX + 2*(y/camHeight - 0.5)*camY;
+            pixDir.normalize();
+        }
+    }
+
     ///  2. generate a primary ray
     ///  3. call the integartor to compute the color along this ray
     ///  4. write this color in the result image

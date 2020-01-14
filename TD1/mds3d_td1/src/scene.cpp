@@ -24,8 +24,19 @@ void Scene::clear()
 /** Search for the nearest intersection between the ray and the object list */
 void Scene::intersect(const Ray& ray, Hit& hit) const
 {
-    /// TODO: iterate on the object list and test for intersection
-    ///       => if any, keep the closest one
+    if(!m_shapeList.empty()){
+        Hit hitTmp = hit;
+        for(uint i = 0; i < m_shapeList.size(); i++){
+            Shape *shapeTmp = m_shapeList.at(i);
+            // Checking if there is a nearest object
+            if(shapeTmp->intersect(ray, hit)){
+                if(hit.t() < hitTmp.t()){
+                    hitTmp = hit;
+                }
+            }
+        }
+        hit = hitTmp;
+    }
 }
 
 void Scene::addChild(Object *obj) {
