@@ -18,23 +18,29 @@ void render(Scene* scene, ImageBlock* result, std::string outputName, bool* done
     Vector3f camY = -camera->up() * tanfovy2 * camera->nearDist();
     Vector3f camF = camera->direction() * camera->nearDist();
 
-    /// TODO:
-    ///  1. iterate over the image pixels
     uint camWidth = camera->vpWidth();
     uint camHeight = camera->vpHeight();
+
+    // iterate over the image pixels
     for(uint y = 0; y < camHeight; y++){
         for(uint x = 0; x < camWidth; x++){
             // Printing the coordinates of the current pixel
             // std::cout << "Iterating on pixel : " << std::to_string(x) << "," << std::to_string(y) << std::endl;
             Point3f pixOrig = camera->position();
-            Vector3f pixDir = camF + 2*(x/camWidth - 0,5)*camX + 2*(y/camHeight - 0.5)*camY;
+            Vector3f pixDir = camF + 2.f*(x/float(camWidth) - 0.5)*camX + 2.f*(y/float(camHeight) - 0.5)*camY;
             pixDir.normalize();
+
+            // generate a primary ray
+            Ray pixRay(pixOrig, pixDir);
+
+            // call the integartor to compute the color along this ray
+            Color3f pixCol = integrator->Li(scene, pixRay);
+
+            // write this color in the result image
+            Vector2f pixel = Vector2f(x, y);
+            result->put(pixel, pixCol);
         }
     }
-
-    ///  2. generate a primary ray
-    ///  3. call the integartor to compute the color along this ray
-    ///  4. write this color in the result image
 
     t = clock() - t;
     std::cout << "Raytracing time : " << float(t)/CLOCKS_PER_SEC << "s"<<std::endl;

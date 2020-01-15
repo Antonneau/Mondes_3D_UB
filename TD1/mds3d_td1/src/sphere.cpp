@@ -26,50 +26,38 @@ bool Sphere::intersect(const Ray& ray, Hit& hit) const
 
     // Calculating the second degree equation's parameters
     float a = d.dot(d);
-    float b = 2*d.dot(o-cen);
+    float b = 2.f*d.dot(o-cen);
     float c = (o-cen).dot(o-cen) - (r*r);
 
     // Calculating the delta
     float delta = (b*b) - 4*a*c;
 
-    // Ray intersecting with two points of the sphere
-    if(delta > 0){
-        float root1 = (-b + sqrt(delta))/(2*a);
-        float root2 = (-b - sqrt(delta))/(2*a);
-
-        // If both of the points are behind the camera
-        if(root1 < 0 && root2 < 0){
-            return false;
-        }
-
-        // If one of the points are behind the camera, get the visible one
-        if(root1 < 0){
-            hit.setT(root2);
-        } else if(root2 < 0) {
-            hit.setT(root1);
-        // Getting the nearest point
+    // If there is at least on intersection, set it to true.
+    bool res = false;
+    // Ray intersecting with one or two points of the sphere
+    if(delta >= 0){
+        // Ray touching the sphere (one point)
+        if(delta == 0){
+            float root = (-b)/(2*a);
+            hit.setT(root);
+            hit.setShape(this);
         } else {
-            if(root1 < root2){
+            float root1 = (-b + sqrt(delta))/(2*a);
+            float root2 = (-b - sqrt(delta))/(2*a);
+
+            // If one of the points are behind the camera, get the visible one
+            if(root2 < 0){
                 hit.setT(root1);
+                hit.setShape(this);
             } else {
                 hit.setT(root2);
+                hit.setShape(this);
             }
         }
-        return true;
-
-    // Ray touching the sphere (one point)
-    } else if(delta == 0){
-        float root = (-b)/(2*a);
-        // If the point is behind the camera
-        if(root < 0){
-            return false;
-        }
-        hit.setT(root);
-        return true;
-    }
-
-    // No roots (intersections) were found, return false.
-    return false;
+        res = true;
+    } 
+    
+    return res;
 }
 
 REGISTER_CLASS(Sphere, "sphere")

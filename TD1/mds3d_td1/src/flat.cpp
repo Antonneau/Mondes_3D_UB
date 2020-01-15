@@ -11,13 +11,12 @@ public:
         /** TODO : Find the surface that is visible in the requested direction
                    Return its ambiant color */
         Hit hit;
+        Color3f color = scene->backgroundColor();
         scene->intersect(ray, hit);
-        if(!(hit.foundIntersection())){
-            return scene->backgroundColor;
-        } else {
-            // Recupérer la couleur de l'objet
+        if(hit.foundIntersection()){
+            color = hit.shape()->material()->ambientColor();
         }
-        return Color3f(0.f);
+        return color;
     }
 
     std::string toString() const {
