@@ -54,6 +54,10 @@ bool Sphere::intersect(const Ray& ray, Hit& hit) const
                 hit.setShape(this);
             }
         }
+        //Point3f p = o + d * hit.t();
+        Vector3f norm = ray.at(hit.t()) - cen;
+        norm.normalize();
+        hit.setNormal(norm);
         res = true;
     } 
     
