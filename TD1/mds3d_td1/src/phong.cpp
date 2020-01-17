@@ -18,11 +18,26 @@ Phong::Phong(const PropertyList &propList)
 
 Color3f Phong::brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv) const
 {
-    /// TODO: implement Phong brdf
+    // R = 2(N • L) N-L
+    Vector3f reflect = 2*(normal.dot(lightDir)) * normal - lightDir;
+    // m_specularColor for ms
+    // m_exponent for s
 
-    throw RTException("Phong::brdf not implemented yet.");
+    // (r.v)
+    float alpha = reflect.dot(viewDir);
+    // Getting max(r.v, 0)
+    if(alpha < 0){
+        alpha = 0;
+    }
 
-    return Color3f(0.f);
+    // max(r.v, 0)pow(s)
+    float beta = pow(alpha, m_exponent);
+
+    // ps = ms(max(r.v, 0))pow(s)
+    Color3f ps = m_specularColor*beta;
+
+    // return p = ps + pd
+    return ps + diffuseColor(uv);
 }
 
 std::string Phong::toString() const {
