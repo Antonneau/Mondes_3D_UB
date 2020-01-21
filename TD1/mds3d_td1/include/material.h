@@ -14,7 +14,7 @@ public:
     virtual Color3f reflectivity() const = 0;
 
     /// evaluate the BRDF
-    virtual Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv) const = 0;
+    virtual Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv = Vector2f::Zero()) const = 0;
 
 protected:
     /// texture

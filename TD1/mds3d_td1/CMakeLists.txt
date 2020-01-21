@@ -29,8 +29,6 @@ include_directories(
   ${FILESYSTEM_INCLUDE_DIR}
   # OBJ mesh loader
   ${TINYOBJLOADER_INCLUDE_DIR}
-  # 3DS mesh loader
-  ${LIB3DS_INCLUDE_DIR}
   # GLAD
   ${GLAD_INCLUDE_DIR}
 )
@@ -84,8 +82,9 @@ set(SRCS
     src/proplist.cpp
     src/flat.cpp
     src/normals.cpp
+    src/direct.cpp
 )
 
 add_executable(mds3d_raytracer ${SRCS})
 
-target_link_libraries(mds3d_raytracer pugixml lodepng lib3ds tinyobjloader nanogui ${NANOGUI_EXTRA_LIBS})
+target_link_libraries(mds3d_raytracer pugixml lodepng tinyobjloader nanogui ${NANOGUI_EXTRA_LIBS})

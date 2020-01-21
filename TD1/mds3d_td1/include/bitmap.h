@@ -39,7 +39,7 @@ public:
     Bitmap(const Eigen::Vector2i &size = Eigen::Vector2i(0, 0))
         : Base(size.y(), size.x()) { }
 
-    /// Load an OpenEXR file with the specified filename
+    /// Load an EXR or PNG file with the specified filename
     Bitmap(const filesystem::path &filename);
 
     /// Save the bitmap with the specified filename according to its extension

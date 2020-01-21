@@ -8,8 +8,6 @@ public:
     }
 
     Color3f Li(const Scene *scene, const Ray &ray) const {
-        /** TODO : Find the surface that is visible in the requested direction
-                   Return its ambiant color */
         Hit hit;
         Color3f color = scene->backgroundColor();
         scene->intersect(ray, hit);
