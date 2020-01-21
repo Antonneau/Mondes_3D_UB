@@ -17,16 +17,21 @@ public:
             color.setZero();
             for(uint i = 0; i < scene->lightList().size(); i++){
                 Point3f inter(ray.origin + (ray.direction*hit.t()));
-                Vector3f light = (scene->lightList().at(i)->direction(inter));
+                float dist;
+                Vector3f light = (scene->lightList().at(i)->direction(inter, &dist));
                 light.normalize();
                 //Vector3f view = ray.direction.normalized();
                 Color3f p = hit.shape()->material()->brdf(ray.direction, -light, hit.normal());
-                float theta = light.dot(hit.normal());
-                if (theta < 0){
-                    theta = 0;
+                Ray visibility(inter + hit.normal() * 0.0001, light);
+                Hit hitVis;
+                scene->intersect(visibility , hitVis);
+                if (!hitVis.foundIntersection() || hitVis.t() > dist){
+                    float theta = light.dot(hit.normal());
+                    if(theta < 0){
+                        theta = 0;
+                    }
+                    color += p * theta * scene->lightList().at(i)->intensity(inter);
                 }
-
-                color += p * theta * scene->lightList().at(i)->intensity(inter);
             }
         }
 
