@@ -15,12 +15,13 @@ public:
 
         if(hit.foundIntersection()){
             color.setZero();
-            Vector2f uv(hit.shape()->material()->textureScaleU(), hit.shape()->material()->textureScaleV());
             for(uint i = 0; i < scene->lightList().size(); i++){
-                cout << "Iterating a new light : " << i << endl;
                 Point3f inter(ray.origin + (ray.direction*hit.t()));
-                Color3f p = hit.shape()->material()->brdf(ray.direction, (scene->lightList().at(i)->direction(inter))*(-1), hit.normal(), uv);
-                float theta = (scene->lightList().at(i)->direction(inter)).dot(hit.normal());
+                Vector3f light = (scene->lightList().at(i)->direction(inter));
+                light.normalize();
+                //Vector3f view = ray.direction.normalized();
+                Color3f p = hit.shape()->material()->brdf(ray.direction, -light, hit.normal());
+                float theta = light.dot(hit.normal());
                 if (theta < 0){
                     theta = 0;
                 }

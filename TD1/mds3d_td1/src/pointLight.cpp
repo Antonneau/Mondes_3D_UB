@@ -11,6 +11,7 @@ public:
 
     Vector3f direction(const Point3f& x, float* dist = 0) const
     {
+        // Ecrire dans dist la direction normalisé.
         if(dist)
             *dist = std::numeric_limits<float>::max();
         return m_position - x;

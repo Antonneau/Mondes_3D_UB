@@ -23,6 +23,8 @@ Color3f Phong::brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Nor
     // m_specularColor for ms
     // m_exponent for s
 
+    reflect.normalize();
+
     // (r.v)
     float alpha = reflect.dot(viewDir);
     // Getting max(r.v, 0)

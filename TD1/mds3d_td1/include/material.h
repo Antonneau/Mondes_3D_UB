@@ -14,18 +14,14 @@ public:
     virtual Color3f reflectivity() const = 0;
 
     /// evaluate the BRDF
-    virtual Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv) const = 0;
-
-    //
-    //  ATTENTION, FONCTIONS A REMETTRE EN PROTECTED !!!
-    //
-    float textureScaleU() const { return m_textureScaleU; }
-    float textureScaleV() const { return m_textureScaleV; }
+    virtual Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv = Vector2f::Zero()) const = 0;
 
 protected:
     /// texture
     enum TextureMode { MODULATE, REPLACE };
 
+    float textureScaleU() const { return m_textureScaleU; }
+    float textureScaleV() const { return m_textureScaleV; }
     TextureMode textureMode() const { return m_textureMode; }
     const Bitmap* texture() const { return m_texture; }
 

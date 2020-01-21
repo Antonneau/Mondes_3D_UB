@@ -75,11 +75,6 @@ if (MSVC)
     foreach(CompilerFlag ${CompilerFlags})
         string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
     endforeach()
-elseif(APPLE)
-    # Try to auto-detect a suitable SDK
-    execute_process(COMMAND bash -c "xcodebuild -version -sdk | grep MacOSX | grep Path | head -n 1 | cut -f 2 -d ' '" OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
-    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
-    string(REGEX REPLACE "^.*X([0-9.]*).sdk$" "\\1" CMAKE_OSX_DEPLOYMENT_TARGET "${CMAKE_OSX_SYSROOT}")
 endif()
 
 if (WIN32)
@@ -107,9 +102,6 @@ add_library(pugixml STATIC pugixml/src/pugixml.cpp)
 set_property(TARGET pugixml PROPERTY
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/pugixml")
 set_property(TARGET pugixml PROPERTY FOLDER "dependencies")
-
-# Build lib3ds
-add_subdirectory(lib3ds)
 
 # Build tinyobjloader
 set(TINYOBJLOADER_BUILD_TEST_LOADER OFF CACHE BOOL " " FORCE)
@@ -139,8 +131,6 @@ set(TINYOBJLOADER_INCLUDE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/tinyobjloader)
 set(TINYEXR_INCLUDE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/tinyexr)
-set(LIB3DS_INCLUDE_DIR
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib3ds/src)
 set(LODEPNG_INCLUDE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/lodepng)
 
@@ -171,7 +161,7 @@ set(CompilerFlags
     TFM_INCLUDE_DIR GLFW_INCLUDE_DIR GLEW_INCLUDE_DIR
     NANOVG_INCLUDE_DIR NANOGUI_INCLUDE_DIR EIGEN_INCLUDE_DIR
     FILESYSTEM_INCLUDE_DIR PUGIXML_INCLUDE_DIR TINYOBJLOADER_INCLUDE_DIR
-    LODEPNG_INCLUDE_DIR TINYEXR_INCLUDE_DIR LIB3DS_INCLUDE_DIR GLAD_INCLUDE_DIR
+    LODEPNG_INCLUDE_DIR TINYEXR_INCLUDE_DIR GLAD_INCLUDE_DIR
     NANOGUI_EXTRA_LIBS
     )
 foreach(CompilerFlag ${CompilerFlags})
