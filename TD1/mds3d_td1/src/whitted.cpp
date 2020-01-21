@@ -1,22 +1,22 @@
 #include "integrator.h"
 #include "scene.h"
 
-class DirectIntegrator : public Integrator {
+class WhittedIntegrator : public Integrator {
 public:
-    DirectIntegrator(const PropertyList &props) {
-        /* No parameters this time */
+    int maxRecursion;
+
+    WhittedIntegrator(const PropertyList &props) {
+        maxRecursion = props.getInteger("maxRecursion");
     }
 
     Color3f Li(const Scene *scene, const Ray &ray) const {
-
         Hit hit;
         Color3f color = scene->backgroundColor();
         scene->intersect(ray, hit);
-
         if(hit.foundIntersection()){
             color.setZero();
+            Point3f inter(ray.origin + (ray.direction*hit.t()));
             for(uint i = 0; i < scene->lightList().size(); i++){
-                Point3f inter(ray.origin + (ray.direction*hit.t()));
                 float dist;
                 Vector3f light = (scene->lightList().at(i)->direction(inter, &dist));
                 light.normalize();
@@ -33,14 +33,23 @@ public:
                     color += p * theta * scene->lightList().at(i)->intensity(inter);
                 }
             }
-        }
+            if (ray.recursionLevel < maxRecursion){
+                Vector3f recDir = 2*(hit.normal().dot(-ray.direction)) * hit.normal() + ray.direction;
+                recDir.normalize();
 
+                Ray recRay(inter + hit.normal() * 0.0001, recDir);
+                recRay.recursionLevel = ray.recursionLevel + 1;
+
+                color += Li(scene, recRay) * hit.shape()->material()->reflectivity() * recDir.dot(hit.normal());
+            }
+        }
+        
         return color;
     }
 
     std::string toString() const {
-        return "DirectIntegrator[]";
+        return "WhittedIntegrator[]";
     }
 };
 
-REGISTER_CLASS(DirectIntegrator, "direct")
+REGISTER_CLASS(WhittedIntegrator, "whitted")

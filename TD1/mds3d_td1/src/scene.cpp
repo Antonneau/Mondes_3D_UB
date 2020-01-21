@@ -30,7 +30,7 @@ void Scene::intersect(const Ray& ray, Hit& hit) const
             Shape *shapeTmp = m_shapeList.at(i);
             // Checking if there is a nearest object
             if(shapeTmp->intersect(ray, hitTmp)){
-                if(hitTmp.t() < hit.t()){
+                if(hitTmp.t() < hit.t() && hitTmp.t() > 0){
                     hit.setT(hitTmp.t());
                     hit.setShape(hitTmp.shape());
                     hit.setNormal(hitTmp.normal());

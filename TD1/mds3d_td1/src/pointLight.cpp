@@ -13,7 +13,7 @@ public:
     {
         // Ecrire dans dist la direction normalisé.
         if(dist)
-            *dist = std::numeric_limits<float>::max();
+            *dist = (m_position - x).norm();
         return m_position - x;
     }
 
