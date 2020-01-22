@@ -38,10 +38,15 @@ public:
     void setNormal(const Normal3f& n) { m_normal = n; }
     const Normal3f& normal() const { return m_normal; }
 
+    // Used to get the UV map of the shape
+    void setUV(const Vector2f& uv) { m_uv = uv; }
+    Vector2f uv() const { return m_uv; }
+
 private:
     Normal3f m_normal;
     const Shape* m_shape;
     float m_t;
+    Vector2f m_uv;
 };
 
 /** Compute the intersection between a ray and an aligned box

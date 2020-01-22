@@ -11,7 +11,7 @@ public:
 
     Color3f Li(const Scene *scene, const Ray &ray) const {
         Hit hit;
-        Color3f color = scene->backgroundColor();
+        Color3f color(0, 0, 0);
         scene->intersect(ray, hit);
         if(hit.foundIntersection()){
             color.setZero();
@@ -21,7 +21,7 @@ public:
                 Vector3f light = (scene->lightList().at(i)->direction(inter, &dist));
                 light.normalize();
                 //Vector3f view = ray.direction.normalized();
-                Color3f p = hit.shape()->material()->brdf(ray.direction, -light, hit.normal());
+                Color3f p = hit.shape()->material()->brdf(ray.direction, -light, hit.normal(), hit.uv());
                 Ray visibility(inter + hit.normal() * 0.0001, light);
                 Hit hitVis;
                 scene->intersect(visibility , hitVis);
@@ -42,6 +42,8 @@ public:
 
                 color += Li(scene, recRay) * hit.shape()->material()->reflectivity() * recDir.dot(hit.normal());
             }
+        } else if (ray.recursionLevel == 0){
+            color = scene->backgroundColor();
         }
         
         return color;
