@@ -28,6 +28,8 @@ bool Plane::intersect(const Ray& ray, Hit& hit) const
         hit.setT(t);
         hit.setShape(this);
         hit.setNormal(m_normal);
+        Vector2f uv(ray.at(hit.t()).x(), ray.at(hit.t()).y());
+        hit.setUV(uv);
         res= true;
     }
 

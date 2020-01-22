@@ -56,8 +56,15 @@ bool Sphere::intersect(const Ray& ray, Hit& hit) const
         }
         //Point3f p = o + d * hit.t();
         Vector3f norm = ray.at(hit.t()) - cen;
+        // Calculating UV map
+        float u = 0.5 + atan2f(norm.x(), norm.y()) / (2*M_PI);
+        float v = 0.5 - asin(-norm.z()/r) / M_PI;
+
+        Vector2f uv(u, v);
         norm.normalize();
         hit.setNormal(norm);
+        hit.setUV(uv);
+
         res = true;
     } 
     
