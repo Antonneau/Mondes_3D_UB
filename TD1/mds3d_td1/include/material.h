@@ -13,6 +13,9 @@ public:
     virtual Color3f diffuseColor(const Vector2f& uv) const = 0;
     virtual Color3f reflectivity() const = 0;
 
+    virtual Color3f transmissivness() const = 0;
+    virtual float etaA() const = 0; 
+    virtual float etaB() const = 0; 
     /// evaluate the BRDF
     virtual Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv = Vector2f::Zero()) const = 0;
 
@@ -51,6 +54,9 @@ public:
    Color3f diffuseColor(const Vector2f& uv) const;
    Color3f reflectivity() const { return Color3f(0); }
 
+   Color3f transmissivness() const { return Color3f(0); }
+   float etaA() const { return 0; }
+   float etaB() const { return 0; }
    Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv) const { return diffuseColor(uv) * INV_PI; }
 
    std::string toString() const {
@@ -74,12 +80,26 @@ public:
 
     Color3f brdf(const Vector3f& viewDir, const Vector3f& lightDir, const Normal3f& normal, const Vector2f& uv) const;
 
+    Color3f transmissivness() const { return m_transmissivness; }
+    void setTransmissivness(Color3f t) { m_transmissivness = t; }
+
+    float etaA() const { return m_etaA; }
+    void setEtaA(float etaA) { m_etaA = etaA; }
+
+    float etaB() const { return m_etaB; }
+    void setEtaB(float etaB) { m_etaB = etaB; }
+
     std::string toString() const;
 
 protected:
     Color3f m_specularColor;
     Color3f m_reflectivity;
     float m_exponent;
+
+    // Transmissivness values
+    Color3f m_transmissivness;
+    float m_etaA;
+    float m_etaB;
 };
 
 #endif // MATERIAL_H

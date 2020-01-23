@@ -33,6 +33,27 @@ public:
                     color += p * theta * scene->lightList().at(i)->intensity(inter);
                 }
             }
+            // Calculer le vecteur refracté
+            float nA = hit.shape()->material()->etaA();
+            float nB = hit.shape()->material()->etaB();
+            // cos(theta1)
+            float theta1 = hit.normal().dot(-ray.direction);
+            float theta2 = sqrt(1 - pow(nA/nB,2) * (1 - pow(theta1, 2)));
+
+            Vector3f trans;
+            if (theta1 >= 0){
+                trans = (nA/nB)*ray.direction + ((nA/nB)*theta1 - theta2) * hit.normal();
+            } else {
+                trans = (nA/nB)*ray.direction + ((nA/nB)*theta1 + theta2) * hit.normal();
+            }
+
+            Ray transmissivness(inter + hit.normal() * 0.0001, trans);
+            Hit transHit;
+            scene->intersect(transmissivness, transHit);
+            if (transHit.foundIntersection()){
+                color += Li(scene, transmissivness) * hit.shape()->material()->transmissivness();
+            }
+
             if (ray.recursionLevel < maxRecursion){
                 Vector3f recDir = 2*(hit.normal().dot(-ray.direction)) * hit.normal() + ray.direction;
                 recDir.normalize();

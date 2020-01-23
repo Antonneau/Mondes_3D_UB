@@ -7,6 +7,10 @@ Phong::Phong(const PropertyList &propList)
     m_reflectivity = propList.getColor("reflectivity",Color3f(0.0));
     m_exponent = propList.getFloat("exponent",0.2);
 
+    m_transmissivness = propList.getColor("transmissivness", Color3f(0.0, 0.0, 0.0));
+    m_etaA = propList.getFloat("etaA", 0.0);
+    m_etaB = propList.getFloat("etaB", 0.0);
+
     std::string texturePath = propList.getString("texture","");
     if(texturePath.size()>0){
         filesystem::path filepath = getFileResolver()->resolve(texturePath);
