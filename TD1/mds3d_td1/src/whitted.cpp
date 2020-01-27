@@ -20,18 +20,29 @@ public:
                 float dist;
                 Vector3f light = (scene->lightList().at(i)->direction(inter, &dist));
                 light.normalize();
-                //Vector3f view = ray.direction.normalized();
                 Color3f p = hit.shape()->material()->brdf(ray.direction, -light, hit.normal(), hit.uv());
+
+                // Ombres portees
                 Ray visibility(inter + hit.normal() * 0.0001, light);
                 Hit hitVis;
                 scene->intersect(visibility , hitVis);
-                if (!hitVis.foundIntersection() || hitVis.t() > dist){
+
+                if (!hitVis.foundIntersection() || hitVis.t() > dist || (hitVis.foundIntersection() && !hitVis.shape()->material()->transmissivness().isZero())){
+                    // Checking if the shadow will be transparent (1 if not)
+                    float alpha = 1.0;                
+                    if (hitVis.foundIntersection() && !hitVis.shape()->material()->transmissivness().isZero()){
+                        float x = hitVis.shape()->material()->transmissivness().x();
+                        float y = hitVis.shape()->material()->transmissivness().y();
+                        float z = hitVis.shape()->material()->transmissivness().z();
+                        float moy = (x + y + z) / 3;
+                        alpha = 0.5 * moy;
+                    }
+
                     float theta = light.dot(hit.normal());
                     if(theta < 0){
                         theta = 0;
                     }
-                    Color3f shadow(1.0, 1.0, 1.0);
-                    color += p * theta * scene->lightList().at(i)->intensity(inter);
+                    color += p * theta * scene->lightList().at(i)->intensity(inter) * alpha;
                 }
             }
 
@@ -65,6 +76,7 @@ public:
 
                     Ray transmissivness(inter + ray.direction * 0.0001, trans);
                     transmissivness.recursionLevel = ray.recursionLevel + 1;
+                    
                     color += Li(scene, transmissivness) * hit.shape()->material()->transmissivness() * RN;
                     
                 }
