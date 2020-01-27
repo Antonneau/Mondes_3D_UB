@@ -30,7 +30,7 @@ Color3f Diffuse::diffuseColor(const Vector2f& uv) const
     if(texture() == nullptr)
         return m_diffuseColor;
 
-    /*float u = uv[0];
+    float u = uv[0];
     float v = uv[1];
 
     // Take texture scaling into account
@@ -51,7 +51,7 @@ Color3f Diffuse::diffuseColor(const Vector2f& uv) const
     case REPLACE:
         return fColor;
     }
-    return fColor;*/
+    return fColor;
 }
 
 REGISTER_CLASS(Diffuse, "diffuse")

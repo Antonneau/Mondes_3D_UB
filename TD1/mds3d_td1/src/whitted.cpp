@@ -30,38 +30,46 @@ public:
                     if(theta < 0){
                         theta = 0;
                     }
+                    Color3f shadow(1.0, 1.0, 1.0);
                     color += p * theta * scene->lightList().at(i)->intensity(inter);
                 }
             }
-            // Calculer le vecteur refracté
-            float nA = hit.shape()->material()->etaA();
-            float nB = hit.shape()->material()->etaB();
-            // cos(theta1)
-            float theta1 = hit.normal().dot(-ray.direction);
-            float theta2 = sqrt(1 - pow(nA/nB,2) * (1 - pow(theta1, 2)));
-
-            Vector3f trans;
-            if (theta1 >= 0){
-                trans = (nA/nB)*ray.direction + ((nA/nB)*theta1 - theta2) * hit.normal();
-            } else {
-                trans = (nA/nB)*ray.direction + ((nA/nB)*theta1 + theta2) * hit.normal();
-            }
-
-            Ray transmissivness(inter + hit.normal() * 0.0001, trans);
-            Hit transHit;
-            scene->intersect(transmissivness, transHit);
-            if (transHit.foundIntersection()){
-                color += Li(scene, transmissivness) * hit.shape()->material()->transmissivness();
-            }
 
             if (ray.recursionLevel < maxRecursion){
+
                 Vector3f recDir = 2*(hit.normal().dot(-ray.direction)) * hit.normal() + ray.direction;
                 recDir.normalize();
 
                 Ray recRay(inter + hit.normal() * 0.0001, recDir);
                 recRay.recursionLevel = ray.recursionLevel + 1;
 
-                color += Li(scene, recRay) * hit.shape()->material()->reflectivity() * recDir.dot(hit.normal());
+                float RN = recDir.dot(hit.normal());
+
+                if(!hit.shape()->material()->transmissivness().isZero()){
+                    // Calculer le vecteur refracté
+                    float nA = hit.shape()->material()->etaA();
+                    float nB = hit.shape()->material()->etaB();
+                    // cos(theta1)
+                    float theta1 = hit.normal().dot(-ray.direction);
+                    float theta2 = sqrt(1 - pow(nA/nB,2) * (1 - pow(theta1, 2)));
+
+                    Vector3f trans;
+                    if (theta1 >= 0){
+                        trans = (nA/nB)*ray.direction + ((nA/nB)*theta1 - theta2) * hit.normal();
+                    } else {
+                        RN = recDir.dot(-hit.normal());
+                        theta1 = -hit.normal().dot(-ray.direction);
+                        theta2 = sqrt(1 - pow(nB/nA,2) * (1 - pow(theta1, 2)));
+                        trans = (nB/nA)*ray.direction + ((nB/nA)*theta1 - theta2) * -hit.normal();
+                    }
+
+                    Ray transmissivness(inter + ray.direction * 0.0001, trans);
+                    transmissivness.recursionLevel = ray.recursionLevel + 1;
+                    color += Li(scene, transmissivness) * hit.shape()->material()->transmissivness() * RN;
+                    
+                }
+
+                color += Li(scene, recRay) * hit.shape()->material()->reflectivity() * RN;
             }
         } else if (ray.recursionLevel == 0){
             color = scene->backgroundColor();
