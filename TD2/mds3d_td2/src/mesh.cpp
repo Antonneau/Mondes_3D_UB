@@ -220,9 +220,12 @@ bool Mesh::intersectFace(const Ray& ray, Hit& hit, int faceId) const
         return false;
     }
 
+    Vector3f x = (u*vertexOfFace(faceId, 0).normal) + (v*vertexOfFace(faceId, 1).normal) + ((1 - u - v)*vertexOfFace(faceId, 2).normal);
+
     hit.setT(t);
-    hit.setNormal(E1.cross(E2).normalized());
+    hit.setNormal(x.normalized());
     hit.setShape(this);
+    hit.setTexcoord(Vector2f(u, v));
 
     ms_itersection_count++;
     return true;
@@ -242,6 +245,7 @@ bool Mesh::intersect(const Ray& ray, Hit& hit) const
                 hit.setT(hitTmp.t());
                 hit.setNormal(hitTmp.normal());
                 hit.setShape(hitTmp.shape());
+                hit.setTexcoord(hitTmp.texcoord());
             }
         }
     }
