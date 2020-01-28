@@ -10,3 +10,9 @@ TD1/newmds3d_td1\.zip
 TD1/mondes_3d_td1.creator.user
 
 *.exr
+
+TD2/mds3d_td2/build/
+
+TD2/mds3d_td2/ext/filesystem/
+
+TD2/mds3d_td2/ext/
