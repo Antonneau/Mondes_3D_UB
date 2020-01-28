@@ -14,7 +14,7 @@ Mesh::Mesh(const PropertyList &propList)
 {
     std::string filename = propList.getString("filename");
     loadFromFile(filename);
-    // buildBVH();
+    buildBVH();
 }
 
 void Mesh::loadFromFile(const std::string& filename)
@@ -235,6 +235,7 @@ bool Mesh::intersect(const Ray& ray, Hit& hit) const
 {
     float tMin, tMax;
     Normal3f normal;
+    m_BVH->intersect(ray, hit);
     if( (!::intersect(ray, m_AABB, tMin, tMax, normal)) || tMin>hit.t())
         return false;
 

@@ -85,15 +85,28 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
 
     // étape 1 : calculer la boite englobante des faces indexées de m_faces[start] à m_faces[end]
     // (Utiliser la fonction extend de Eigen::AlignedBox3f et la fonction mpMesh->vertexOfFace(int) pour obtenir les coordonnées des sommets des faces)
+    Eigen::AlignedBox3f box;
+    for(int i = start; i <= end; i++){
+        for(int face = 0; face <= 2; face ++){
+            box.extend(m_pMesh->vertexOfFace(face, i).position);
+        }
+    }
 
     // étape 2 : déterminer si il s'agit d'une feuille (appliquer les critères d'arrêts)
-
     // Si c'est une feuille, finaliser le noeud et quitter la fonction
-
+    if(level >= maxDepth || end - start > targetCellSize){
+        node.box = box;
+        node.first_face_id = start;
+        node.nb_faces = end - start;
+        node.is_leaf = true;
+        return;
+    }
     // Si c'est un noeud interne :
-
     // étape 3 : calculer l'index de la dimension (x=0, y=1, ou z=2) et la valeur du plan de coupe
     // (on découpe au milieu de la boite selon la plus grande dimension)
+    Vector3f coordMin = box.min();
+    Vector3f coordMax = box.max();
+    // Comparer les coordonnées et mémoriser selon quel axe découper
 
     // étape 4 : appeler la fonction split pour trier (partiellement) les faces et vérifier si le split a été utile
 
