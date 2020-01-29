@@ -92,12 +92,12 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
         }
     }
 
+    node.box = box;
+    node.nb_faces = end - start;
     // étape 2 : déterminer si il s'agit d'une feuille (appliquer les critères d'arrêts)
     // Si c'est une feuille, finaliser le noeud et quitter la fonction
-    if(level >= maxDepth || end - start > targetCellSize){
-        node.box = box;
-        node.first_face_id = start;
-        node.nb_faces = end - start;
+    if(level >= maxDepth || end - start < targetCellSize){
+        node.first_face_id = m_faces[start];
         node.is_leaf = true;
         return;
     }
@@ -106,9 +106,30 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
     // (on découpe au milieu de la boite selon la plus grande dimension)
     Vector3f coordMin = box.min();
     Vector3f coordMax = box.max();
-    // Comparer les coordonnées et mémoriser selon quel axe découper
+    int axisToCut = 0;
+    float axisValue = coordMin.x + (coordMax.x / 2);
 
+    if (coordMax.x - coordMin.x < coordMax.y - coordMin.y || coordMax.x - coordMin.x < coordMax.z - coordMin.z){
+        if (coordMax.z - coordMin.z < coordMax.y - coordMin.y){
+            axisValue = coordMin.y + (coordMax.y / 2);
+            axisToCut = 1;
+        } else {
+            axisValue = coordMin.z + (coordMax.z / 2);
+            axisToCut = 2;
+        }
+    }   
     // étape 4 : appeler la fonction split pour trier (partiellement) les faces et vérifier si le split a été utile
-
+    int splitValue = split(start, end, axisToCut, axisValue);
+    // Gérer le cas des splits inutiles
+    if (splitValue == start || splitValue == end){
+        node.first_face_id = m_faces[start];
+        node.is_leaf = true;
+        return;
+    }
     // étape 5 : allouer les fils, et les construire en appelant buildNode...
+
+    node.first_child_id = (nodeId*2) + 1;
+    m_nodes.resize(m_nodes.size() + 2);
+    buildNode(node.first_child_id , start, splitValue, level+1, targetCellSize, maxDepth);
+    buildNode(node.first_child_id + 1, splitValue+1, end, level+1, targetCellSize, maxDepth);
 }
