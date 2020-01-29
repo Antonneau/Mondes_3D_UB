@@ -55,8 +55,16 @@ bool BVH::intersectNode(int nodeId, const Ray& ray, Hit& hit) const
 {
     // TODO, deux cas: soit mNodes[nodeId] est une feuille (il faut alors intersecter les triangles du noeud),
     // soit c'est un noeud interne (il faut visiter les fils (ou pas))
+    Node& node = m_nodes[nodeId];
+    if (node == nullptr){
+        return false;
+    }
 
-    return false;
+    if (node.is_leaf){
+        // Utiliser nb_faces et first_face_id pour l'intersection
+    }
+
+    return true;
 }
 
 /** Sorts the faces with respect to their centroid along the dimension \a dim and spliting value \a split_value.
