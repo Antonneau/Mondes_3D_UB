@@ -55,7 +55,11 @@ Si une de ces conditions manquent ou est mal respectée, cela peut donner le typ
 
 Cependant, si ces trois fonctions sont bien implémentées, nous obtenons un gain de temps non négligeable pour les rendus :
 
+![killeroo](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killeroo.png?raw=true)
+![killeroo_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killeroo_time.png?raw=true)
+
 ![killerooGlass](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass.png?raw=true)
+![killerooGlass_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass_time.png?raw=true)
 
 
 ## II . Points délicats

@@ -40,28 +40,17 @@ void BVH::build(const Mesh* pMesh, int targetCellSize, int maxDepth)
 
 bool BVH::intersect(const Ray& ray, Hit& hit) const
 {
-    // compute the intersection with the root node
-    //if( (!::intersect(ray, m_nodes[0].box, tMin, tMax, n)) || tMin>hit.t())
-    //    return false;
-    
-
-    // TODO
-    // vérifier si on a bien une intersection (en fonction de tMin, tMax, et hit.t()), et si oui appeler intersecNode...
     bool val = intersectNode(0, ray, hit);
     return val;
 }
 
 bool BVH::intersectNode(int nodeId, const Ray& ray, Hit& hit) const
 {
-    // TODO, deux cas: soit mNodes[nodeId] est une feuille (il faut alors intersecter les triangles du noeud),
-    // soit c'est un noeud interne (il faut visiter les fils (ou pas))
-    //cout << "intersectNode : getting node" << endl;
     Node node = m_nodes[nodeId];
 
     bool ret = false;
     // Dans le cas d'une feuille, on teste l'interection sur chacunes des faces
     if (node.is_leaf){
-        //cout << "intersctNode : leaf" << endl;
         Hit hitTmp;
         int start = node.first_face_id;
         for(int i = start; i < start + node.nb_faces; i++){
@@ -77,13 +66,9 @@ bool BVH::intersectNode(int nodeId, const Ray& ray, Hit& hit) const
         }
     // Dans le cas d'un noeud, tester l'intersection entre les fils
     } else {
-        //cout << "intersctNode : node" << endl;
         // Tester si il y a intersection entre les boites des fils
         float tMinL, tMaxL, tMinR, tMaxR;
         Normal3f nL, nR;
-        // Si la 1ere boite intersectée n'est pas vide, on appelle récursivement cette fonction
-        // Sinon, on fait un appel recursif sur l'autre boite
-        // Si les boites se chevauchent, les tester en même temps
         bool testL = ::intersect(ray, m_nodes[node.first_child_id].box, tMinL, tMaxL, nL);
         bool testR = ::intersect(ray, m_nodes[node.first_child_id+1].box, tMinR, tMaxR, nR);
 
@@ -101,9 +86,7 @@ bool BVH::intersectNode(int nodeId, const Ray& ray, Hit& hit) const
             ret = intersectNode(node.first_child_id, ray, hit);
             // Si les boites sont entrelacées, que le point d'intersection est dans l'ntrelacement ou la boite gauche est vide
             if(tMaxL > tMinR || hit.t() > tMinR || !ret){
-                bool ret2 = intersectNode(node.first_child_id +1, ray, hit);
-                if (ret2)
-                    ret = ret2;
+                ret = intersectNode(node.first_child_id +1, ray, hit);
             }
         }
     }
@@ -137,8 +120,7 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
     Node& node = m_nodes[nodeId];
 
     // étape 1 : calculer la boite englobante des faces indexées de m_faces[start] à m_faces[end]
-    // (Utiliser la fonction extend de Eigen::AlignedBox3f et la fonction mpMesh->vertexOfFace(int) pour obtenir les coordonnées des sommets des faces)
-    //cout << "entering buildNode" << endl;
+
     Eigen::AlignedBox3f box;
     for(int i = start; i < end; i++){
         for(int face = 0; face <= 2; face ++){
@@ -175,7 +157,6 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
     // étape 4 : appeler la fonction split pour trier (partiellement) les faces et vérifier si le split a été utile
     int splitValue = split(start, end, axisToCut, axisValue);
     // Gérer le cas des splits inutiles
-    //cout << "before split" << endl;
     if (splitValue == start || splitValue == end){
         node.first_face_id = start;
         node.is_leaf = true;
@@ -186,7 +167,6 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
     int size = m_nodes.size();
     node.first_child_id = size;
     m_nodes.resize(m_nodes.size() + 2);
-    //cout << "recursive call" << endl;
     buildNode(size , start, splitValue, level+1, targetCellSize, maxDepth);
     buildNode(size + 1, splitValue, end, level+1, targetCellSize, maxDepth);
 }
