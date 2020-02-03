@@ -24,10 +24,12 @@ Si toutes ces conditions sont vérifiées, on est dans le repère barycentrique.
 Nous pouvons améliorer le rendu en "lissant" le bord des triangles. Il suffit de changer la valeur de la normale par $u(A - C) + v(B - C) + C$ avec A, B et C correspondant aux faces du triangle intersecté. Voici le nouveau résultat (le 1er avec `tw503.obj` et le 2ème avec `tw.obj`).
 
 ![tw2](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw3.png?raw=true)
+
 ![tw2time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw3_time.png?raw=true)
 
 
 ![tw3](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw2.png?raw=true)
+
 ![tw3time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw2_time.png?raw=true)
 
 ### BVH
@@ -56,9 +58,11 @@ Si une de ces conditions manquent ou est mal respectée, cela peut donner le typ
 Cependant, si ces trois fonctions sont bien implémentées, nous obtenons un gain de temps non négligeable pour les rendus :
 
 ![killeroo](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killeroo.png?raw=true)
+
 ![killeroo_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killeroo_time.png?raw=true)
 
 ![killerooGlass](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass.png?raw=true)
+
 ![killerooGlass_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass_time.png?raw=true)
 
 
