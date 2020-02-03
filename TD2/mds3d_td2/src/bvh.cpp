@@ -99,7 +99,7 @@ bool BVH::intersectNode(int nodeId, const Ray& ray, Hit& hit) const
         // Si les deux boites sont touchées
         } else {
             ret = intersectNode(node.first_child_id, ray, hit);
-            // Si les boites sont entrelacées ou la boite gauche est vide
+            // Si les boites sont entrelacées, que le point d'intersection est dans l'ntrelacement ou la boite gauche est vide
             if(tMaxL > tMinR || hit.t() > tMaxL || !ret){
                 bool ret2 = intersectNode(node.first_child_id +1, ray, hit);
                 if (ret2)
@@ -183,9 +183,10 @@ void BVH::buildNode(int nodeId, int start, int end, int level, int targetCellSiz
     }
     // étape 5 : allouer les fils, et les construire en appelant buildNode...
 
-    node.first_child_id = m_nodes.size();
+    int size = m_nodes.size();
+    node.first_child_id = size;
     m_nodes.resize(m_nodes.size() + 2);
     //cout << "recursive call" << endl;
-    buildNode(node.first_child_id , start, splitValue, level+1, targetCellSize, maxDepth);
-    buildNode(node.first_child_id + 1, splitValue, end, level+1, targetCellSize, maxDepth);
+    buildNode(size , start, splitValue, level+1, targetCellSize, maxDepth);
+    buildNode(size + 1, splitValue, end, level+1, targetCellSize, maxDepth);
 }

@@ -50,9 +50,11 @@ Ceci est pour le cas de la feuille. Pour le noeud, il faut tester tous les cas p
 On appelle récursivement la fonction avec le fils de gauche. Si les boites s'entrelacent (condition `tMaxL > tMinR`), si le point d'intersection se trouve dans dans cet entrelacement ou si il n'y a pas eu d'intersection avec le fils de gauche, on effectue la récursion cette fois-ci avec le fils de droite.
 
 Si une de ces conditions manquent ou est mal respectée, cela peut donner le type de bug suivant : 
+
 ![tw_intersect](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw_intersect.png?raw=true)
 
 Cependant, si ces trois fonctions sont bien implémentées, nous obtenons un gain de temps non négligeable pour les rendus :
+
 ![killerooGlass](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass.png?raw=true)
 
 
