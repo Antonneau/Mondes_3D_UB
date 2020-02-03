@@ -14,7 +14,7 @@ Mesh::Mesh(const PropertyList &propList)
 {
     std::string filename = propList.getString("filename");
     loadFromFile(filename);
-    // buildBVH();
+    buildBVH();
 }
 
 void Mesh::loadFromFile(const std::string& filename)
@@ -237,15 +237,18 @@ bool Mesh::intersect(const Ray& ray, Hit& hit) const
     Normal3f normal;
     if( (!::intersect(ray, m_AABB, tMin, tMax, normal)) || tMin>hit.t())
         return false;
-
-    for(uint i = 0; i < m_faces.size(); i++){
-        Hit hitTmp;
-        if(intersectFace(ray, hitTmp, i)){
-            if(hitTmp.t() < hit.t() && hitTmp.t() > 0){
-                hit.setT(hitTmp.t());
-                hit.setNormal(hitTmp.normal());
-                hit.setShape(hitTmp.shape());
-                hit.setTexcoord(hitTmp.texcoord());
+    if(m_BVH)
+        m_BVH->intersect(ray, hit);
+    else {
+        for(uint i = 0; i < m_faces.size(); i++){
+            Hit hitTmp;
+            if(intersectFace(ray, hitTmp, i)){
+                if(hitTmp.t() < hit.t() && hitTmp.t() > 0){
+                    hit.setT(hitTmp.t());
+                    hit.setNormal(hitTmp.normal());
+                    hit.setShape(hitTmp.shape());
+                    hit.setTexcoord(hitTmp.texcoord());
+                }
             }
         }
     }
