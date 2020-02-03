@@ -86,7 +86,10 @@ bool BVH::intersectNode(int nodeId, const Ray& ray, Hit& hit) const
             ret = intersectNode(node.first_child_id, ray, hit);
             // Si les boites sont entrelacées, que le point d'intersection est dans l'ntrelacement ou la boite gauche est vide
             if(tMaxL > tMinR || hit.t() > tMinR || !ret){
-                ret = intersectNode(node.first_child_id +1, ray, hit);
+                bool ret2 = intersectNode(node.first_child_id +1, ray, hit);
+                // If we found an intersection in the right box, return the new value
+                if (ret2)
+                    ret = ret2;
             }
         }
     }
