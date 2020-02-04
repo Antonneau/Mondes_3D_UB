@@ -84,6 +84,7 @@ void Mesh::draw(const Shader &shd)
     glEnableVertexAttribArray(normal_loc);
   }
 
+  glDrawElements(GL_TRIANGLES, 3*mFaces.size(), GL_UNSIGNED_INT, 0);
   glDisableVertexAttribArray(vertex_loc);
   if(normal_loc>=0) glDisableVertexAttribArray(normal_loc);
 

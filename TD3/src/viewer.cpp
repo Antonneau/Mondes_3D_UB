@@ -19,7 +19,7 @@ Viewer::~Viewer()
 void Viewer::init(int w, int h){
     loadShaders();
 
-    if(!_mesh.load(DATA_DIR"/models/test.off")) exit(1);
+    if(!_mesh.load(DATA_DIR"/models/itsJungleOutThere.obj")) exit(1);
     _mesh.initVBA();
 
     reshape(w,h);
@@ -38,7 +38,14 @@ void Viewer::reshape(int w, int h){
  */
 void Viewer::drawScene()
 {
-  // TODO
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.5, 0.5, 0.5, 1);
+
+    glViewport(0, 0, _winWidth, _winHeight);
+
+    _shader.activate();
+    _mesh.draw(_shader);
+    _shader.deactivate();
 }
 
 
