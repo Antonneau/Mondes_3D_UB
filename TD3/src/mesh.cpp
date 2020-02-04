@@ -61,6 +61,7 @@ void Mesh::draw(const Shader &shd)
   glBindVertexArray(mVertexArrayId);
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferId);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferId);
+  glEnable(GL_DEPTH_TEST);
   
   // Specify vertex data
 
@@ -75,18 +76,34 @@ void Mesh::draw(const Shader &shd)
                                         // (e.g. number of bytes between x_0 and x_1)
                         0);             // number of bytes to get x_0
   // 3 - activate this stream of vertex attribute
+
+
   glEnableVertexAttribArray(vertex_loc);
   
   int normal_loc = shd.getAttribLocation("vtx_normal");
   if(normal_loc>=0)
   {
+    // 6th argument : position in the vertex.
+    //  1 : position (0)
+    //  2 : normal (size)
+    //  3 : color (2*size)
+    //  4 : l (3*size)
     glVertexAttribPointer(normal_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(Vector3f));
     glEnableVertexAttribArray(normal_loc);
+  }
+
+  // Getting the color
+  int color_loc = shd.getAttribLocation("vtx_color");
+  if(color_loc>=0)
+  {
+    glVertexAttribPointer(color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(Vector3f)*2));
+    glEnableVertexAttribArray(color_loc);
   }
 
   glDrawElements(GL_TRIANGLES, 3*mFaces.size(), GL_UNSIGNED_INT, 0);
   glDisableVertexAttribArray(vertex_loc);
   if(normal_loc>=0) glDisableVertexAttribArray(normal_loc);
+  if(color_loc>=0) glDisableVertexAttribArray(color_loc);
 
   checkError();
 }

@@ -4,7 +4,7 @@
 using namespace Eigen;
 
 Viewer::Viewer()
-  : _winWidth(0), _winHeight(0)
+  : _winWidth(0), _winHeight(0), _zoom(1.), _offset(0., 0.)
 {
 }
 
@@ -19,7 +19,7 @@ Viewer::~Viewer()
 void Viewer::init(int w, int h){
     loadShaders();
 
-    if(!_mesh.load(DATA_DIR"/models/itsJungleOutThere.obj")) exit(1);
+    if(!_mesh.load(DATA_DIR"/models/lemming.off")) exit(1);
     _mesh.initVBA();
 
     reshape(w,h);
@@ -40,10 +40,14 @@ void Viewer::drawScene()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.5, 0.5, 0.5, 1);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
 
     glViewport(0, 0, _winWidth, _winHeight);
 
     _shader.activate();
+    glUniform1f(_shader.getUniformLocation("zoom"), _zoom);
+    glUniform2fv(_shader.getUniformLocation("offset"), 1, _offset.data());
     _mesh.draw(_shader);
     _shader.deactivate();
 }
@@ -80,21 +84,27 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
   {
     if (key==GLFW_KEY_UP)
     {
+       _offset(1) += 0.1;
     }
     else if (key==GLFW_KEY_DOWN)
     {
+       _offset(1) -= 0.1;
     }
     else if (key==GLFW_KEY_LEFT)
     {
+       _offset(0) -= 0.1;
     }
     else if (key==GLFW_KEY_RIGHT)
     {
+       _offset(0) += 0.1;
     }
     else if (key==GLFW_KEY_PAGE_UP)
     {
+      _zoom *= 1.2;
     }
     else if (key==GLFW_KEY_PAGE_DOWN)
     {
+      _zoom /= 1.2;
     }
   }
 }
