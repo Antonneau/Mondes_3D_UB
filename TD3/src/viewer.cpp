@@ -49,6 +49,11 @@ void Viewer::drawScene()
     glUniform1f(_shader.getUniformLocation("zoom"), _zoom);
     glUniform2fv(_shader.getUniformLocation("offset"), 1, _offset.data());
     _mesh.draw(_shader);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDepthFunc(GL_LEQUAL);
+    //glUniform1f(_shader.getUniformLocation("whiteFilled"), 1);
+    _mesh.draw(_shader);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     _shader.deactivate();
 }
 
