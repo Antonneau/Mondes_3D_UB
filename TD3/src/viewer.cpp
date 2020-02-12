@@ -4,7 +4,7 @@
 using namespace Eigen;
 
 Viewer::Viewer()
-  : _winWidth(0), _winHeight(0), _zoom(1.), _offset(0., 0.)
+  : _winWidth(0), _winHeight(0), _zoom(1.), _offset(0., 0.), _enableWire(-1), _enableView(-1), _thetaX(0), _thetaY(0)
 {
 }
 
@@ -24,6 +24,9 @@ void Viewer::init(int w, int h){
 
     reshape(w,h);
     _trackball.setCamera(&_cam);
+
+    _cam.setPerspective(M_PI/2, 0.1, 100000);
+    _cam.lookAt(Vector3f(0, 0.5, 0), Vector3f(0.3, 0.3, 0.3), Vector3f(0, 1, 0));
 }
 
 void Viewer::reshape(int w, int h){
@@ -36,31 +39,58 @@ void Viewer::reshape(int w, int h){
 /*!
    callback to draw graphic primitives
  */
-void Viewer::drawScene()
+void Viewer::drawScene2D()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.5, 0.5, 0.5, 1);
     glClear(GL_DEPTH_BUFFER_BIT);
 
 
-    glViewport(0, 0, _winWidth, _winHeight);
+    _shader.activate();    
+    Vector3f t(0, 0.5, 0);
+    Affine3f A = Translation3f(t)
+                 * AngleAxisf(_thetaX, Vector3f::UnitX())
+                 * AngleAxisf(_thetaY, Vector3f::UnitY())
+                 * Translation3f(-t);
 
-    _shader.activate();
-    glUniform1f(_shader.getUniformLocation("zoom"), _zoom);
-    glUniform2fv(_shader.getUniformLocation("offset"), 1, _offset.data());
-    _mesh.draw(_shader);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDepthFunc(GL_LEQUAL);
-    //glUniform1f(_shader.getUniformLocation("whiteFilled"), 1);
-    _mesh.draw(_shader);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    A(0, 3) += _offset.x();
+    A(1, 3) += _offset.y();
+
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, A.matrix().data());
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_cam"), 1, GL_FALSE, _cam.viewMatrix().data());
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_persp"), 1, GL_FALSE, _cam.projectionMatrix().data());
+    int i = 1;
+    if(_enableView > 0){
+      glUniform1f(_shader.getUniformLocation("views"), 1);
+      glViewport(-_winWidth/2, 0, _winWidth, _winHeight);
+      i = 2;
+    } else {
+      glUniform1f(_shader.getUniformLocation("views"), 0);
+      glViewport(0, 0, _winWidth, _winHeight);
+    }
+    while(i > 0){
+      // Drawing the wire version
+      if (_enableWire > 0){
+        glEnable(GL_LINE_SMOOTH);
+        glUniform1f(_shader.getUniformLocation("white_filled"), 1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDepthFunc(GL_LEQUAL);
+        _mesh.draw(_shader);
+      }
+      // Drawing the full model
+      glUniform1f(_shader.getUniformLocation("white_filled"), 0);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      _mesh.draw(_shader);
+      glViewport(_winWidth/2, 0, _winWidth, _winHeight);
+      i--;
+    }
     _shader.deactivate();
 }
 
 
 void Viewer::updateAndDrawScene()
 {
-    drawScene();
+    drawScene2D();
 }
 
 void Viewer::loadShaders()
@@ -87,22 +117,24 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
 
   if(action == GLFW_PRESS || action == GLFW_REPEAT )
   {
+    // Position
     if (key==GLFW_KEY_UP)
-    {
-       _offset(1) += 0.1;
-    }
-    else if (key==GLFW_KEY_DOWN)
     {
        _offset(1) -= 0.1;
     }
-    else if (key==GLFW_KEY_LEFT)
+    else if (key==GLFW_KEY_DOWN)
     {
-       _offset(0) -= 0.1;
+       _offset(1) += 0.1;
     }
-    else if (key==GLFW_KEY_RIGHT)
+    else if (key==GLFW_KEY_LEFT)
     {
        _offset(0) += 0.1;
     }
+    else if (key==GLFW_KEY_RIGHT)
+    {
+       _offset(0) -= 0.1;
+    }
+    // Zoom
     else if (key==GLFW_KEY_PAGE_UP)
     {
       _zoom *= 1.2;
@@ -110,6 +142,33 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
     else if (key==GLFW_KEY_PAGE_DOWN)
     {
       _zoom /= 1.2;
+    }
+    // Enable wire mode
+    else if (key == GLFW_KEY_Z)
+    {
+      _enableWire *= -1;
+    }
+    // Enable multiple viewports
+    else if (key == GLFW_KEY_V)
+    {
+      _enableView *= -1;
+    }
+    // Rotation
+    else if (key == GLFW_KEY_W)
+    {
+      _thetaX += M_PI/10;
+    }
+    else if (key == GLFW_KEY_S)
+    {
+      _thetaX -= M_PI/10;
+    }
+    else if (key == GLFW_KEY_D)
+    {
+      _thetaY += M_PI/10;
+    }
+    else if (key == GLFW_KEY_A)
+    {
+      _thetaY -= M_PI/10;
     }
   }
 }
