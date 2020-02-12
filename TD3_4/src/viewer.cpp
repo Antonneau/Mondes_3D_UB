@@ -4,7 +4,7 @@
 using namespace Eigen;
 
 Viewer::Viewer()
-  : _winWidth(0), _winHeight(0), _zoom(1.), _offset(0., 0.), _enableWire(-1), _enableView(-1), _thetaX(0), _thetaY(0)
+  : _winWidth(0), _winHeight(0), _offset(0., 0.), _enableWire(-1), _enableView(-1), _thetaX(0), _thetaY(0), _thetaZ(0)
 {
 }
 
@@ -39,7 +39,7 @@ void Viewer::reshape(int w, int h){
 /*!
    callback to draw graphic primitives
  */
-void Viewer::drawScene2D()
+void Viewer::drawScene()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.5, 0.5, 0.5, 1);
@@ -51,6 +51,7 @@ void Viewer::drawScene2D()
     Affine3f A = Translation3f(t)
                  * AngleAxisf(_thetaX, Vector3f::UnitX())
                  * AngleAxisf(_thetaY, Vector3f::UnitY())
+                 * AngleAxisf(_thetaZ, Vector3f::UnitZ())
                  * Translation3f(-t);
 
     A(0, 3) += _offset.x();
@@ -90,7 +91,7 @@ void Viewer::drawScene2D()
 
 void Viewer::updateAndDrawScene()
 {
-    drawScene2D();
+    drawScene();
 }
 
 void Viewer::loadShaders()
@@ -120,28 +121,19 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
     // Position
     if (key==GLFW_KEY_UP)
     {
-       _offset(1) -= 0.1;
+       _offset(1) += 0.1;
     }
     else if (key==GLFW_KEY_DOWN)
     {
-       _offset(1) += 0.1;
+       _offset(1) -= 0.1;
     }
     else if (key==GLFW_KEY_LEFT)
     {
-       _offset(0) += 0.1;
+       _offset(0) -= 0.1;
     }
     else if (key==GLFW_KEY_RIGHT)
     {
-       _offset(0) -= 0.1;
-    }
-    // Zoom
-    else if (key==GLFW_KEY_PAGE_UP)
-    {
-      _zoom *= 1.2;
-    }
-    else if (key==GLFW_KEY_PAGE_DOWN)
-    {
-      _zoom /= 1.2;
+       _offset(0) += 0.1;
     }
     // Enable wire mode
     else if (key == GLFW_KEY_Z)
@@ -169,6 +161,14 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
     else if (key == GLFW_KEY_A)
     {
       _thetaY -= M_PI/10;
+    }
+    else if (key == GLFW_KEY_T)
+    {
+      _thetaZ += M_PI/10;
+    }
+    else if (key == GLFW_KEY_R)
+    {
+      _thetaZ -= M_PI/10;
     }
   }
 }
