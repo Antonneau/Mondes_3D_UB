@@ -1,42 +1,18 @@
 
-TD1/mds3d_td1/build/
-
-TD1/mds3d_td1/\.vscode/
-
-TD1/mds3d_td1/ext/nanogui/resources/\.nfs0000000001dba7b300000031
-
-TD1/newmds3d_td1\.zip
-
-TD1/mondes_3d_td1.creator.user
-
-*.exr
-
-TD2/mds3d_td2/build/
-
-TD2/mds3d_td2/ext/filesystem/
-
-TD2/mds3d_td2/ext/
-
-TD2/mds3d_td2/debug/
-
 TD1/build/
-
-TD3/build/
-
-TD2/debug/
-
-TD2/build/
-
-TD1/ext/filesystem/
 
 TD1/ext/
 
+TD2/debug/
+
 TD2/ext/
 
-\.vscode/
-
-TD1/data/petanque\.png
+TD2/build/
 
 TD3_4/build/
 
+\.vscode/
+
 *.log
+
+*.exr
