@@ -14,8 +14,8 @@ Pour finir, il nous faut récupérer la couleur de la forme (la méthode `Li`). 
 
 Cela nous donne les résultats suivants :
 
-![troisSpheres](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/troisspheres.png?raw=true)
-![petanque](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/petanque.png?raw=true)
+![troisSpheres](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/troisspheres.png?raw=true)
+![petanque](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/petanque.png?raw=true)
 
 ### Eclairage local
 
@@ -28,7 +28,7 @@ Ensuite, l'affichage ci-contre se fait en donnant à la couleur renvoyé par la 
 Cela nous donne le résultat suivant :
 
 
-![troisspheres1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/troisspheres1.png?raw=true)
+![troisspheres1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/troisspheres1.png?raw=true)
 
 Ces normales vont nous servir au calcul de l'éclairage local. On calcule le BRDF de la méthode de Phong dans la méthode `Material::brdf`. Deux attributs et une méthode vont nous servir à calculer ce modèle : `m_specularColor` pour la couleur spéculaire, `m_exponent` pour la brillance de l'objet et `Material::diffuseColor(uv)` pour récupérer la couleur diffuse.
 
@@ -38,20 +38,20 @@ Un nouvel intégrateur a dû être ajouté pour tester le modèle de Phong : il 
 
 Voici le résultat sur la scène `troisSpheres.scn` avec l'intégrateur `direct` :
 
-![phongreal](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/phongreal.png?raw=true)
+![phongreal](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/phongreal.png?raw=true)
 
 ### Rayons secondaires
 
 Le calcul des ombres portées se fait après le calcul du BRDF de Phong. Il s'agit de tracer un rayon qui démarre au point d'intersection de la lumière avec l'objet en question. Si un autre objet est intersecté, il sera caché par la lumière et donc par conséquent le pixel aura une couleur noire (étant donné qu'il ne s'agit pas d'un éclairage global).
 
-![ombres](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/ombres.png?raw=true)
+![ombres](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/ombres.png?raw=true)
 
 
 Un nouvel intégrateur a été ajouté : l'intégrateur `whitted`, qui rajoute les effets de réflexion et de réfraction des rayons.
 Ici, il s'agit du cas de la réflexion. Il faut récupérer le nombre maximal de rebond depuis le fichier `.scn` grâce à la méthode `getInteger` (de multiples variants sont disponibles), qu'on attribut à une variable de classe. Grâce à l'attribut `recursionLevel` de la classe `Ray`, on peut faire une comparaison entre celui-ci et la variable de classe `maxRecursion`. Tant que le rayon est réfléchi, on trace le nouveau rayon réfléchi, puis on appelle récursivement la fonction `Li` avec ce nouveau rayon. On multiplie ce résultat par la réflexivité du matériau (attribut de classe) et par le produit scalaire de la direction du rayon par la normale de la forme.
 
-![reflect1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/reflect1.png?raw=true)
-![petanquereflect](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/petanquereflect.png?raw=true)
+![reflect1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/reflect1.png?raw=true)
+![petanquereflect](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/petanquereflect.png?raw=true)
 
 ### Bonus
 
@@ -62,27 +62,27 @@ Une fois ces UV Maps récupérées, on les place dans l'attribut `uv` de la clas
 
 Les résultats sont les suivants :
 
-![texture](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/texture.png?raw=true)
+![texture](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/texture.png?raw=true)
 
-![texture1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/texture1.png?raw=true)
+![texture1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/texture1.png?raw=true)
 
-![texture2](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/texture2.png?raw=true)
+![texture2](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/texture2.png?raw=true)
 
-![texture4](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/texture4.png?raw=true)
+![texture4](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/texture4.png?raw=true)
 
 Concernant la réfraction, l'ajout de nouveaux attributs et méthodes dans la classe `Material` étaient nécessaire au calcul de la formule de `Snell-Descartes`. Il y a aussi les méthodes permettant de récupérer les attributs depuis le fichier scène dans le constructeur de `Phong`.
 
 Le calcul de la réfraction se fait dans la condition `if(recursionLevel < maxRecursion)`, que j'ai dû changer pour l'occasion. Si le matériau de l'objet intersecté réfracte, on calcule la formule de Snell-Descartes, qui change si  $\cos\theta1 \lt 0$, la formule changera en conséquence (on prendra l'opposé de la normale et on permutera $n_A$ et $n_B$). On calcule le rayon réfracté, puis on rappelle la fonction `Li` récursivement en multipliant le résultat cette fois-ci par la transmissibilité du matériau.
 
-![refract](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/refract.png?raw=true)
+![refract](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/refract.png?raw=true)
 
 A ce stade là, un problème persiste : même si le matériau est "transparent", l'ombre reste pleine. Pour corriger cela, on ajoute un autre coefficient lors du calcul de l'ombre portée, c'est le coefficient `alpha`, qui est le produit de $0.5$ par la moyenne des coordonnées de la transmissibilité.
 
-![refract1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/refract1.png?raw=true)
+![refract1](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/refract1.png?raw=true)
 
 Et enfin, pour obtenir une sphère transparente, il suffit de modifier les valeurs de `etaA` et `etaB` afin qu'ils aient les même valeurs. Voici le résultat :
 
-![refract2](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/refract2.png?raw=true)
+![refract2](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/refract2.png?raw=true)
 
 Un problème persiste, l'effet "bulle" (image ci-dessus) ne réfléchit pas correctement par rapport au résultat du TD. Les bords ne sont pas corrects.
 
@@ -92,8 +92,8 @@ L'un des points les plus délicats de ce TD est la visualisations de vecteurs et
 
 La récursion pour la réflexion de la lumière m'a aussi posé problème, surtout pour la visualisation du nouveau rayon à calculer. Un des bugs illustré ci-dessous montre un problème de choix de variables obtenu lors d'une session de TD : 
 
-![reflectffail](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/reflectffail.png?raw=true)
+![reflectffail](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/reflectffail.png?raw=true)
 
 L'implémentation du bonus de la réfraction était délicat, non seulement pour la formule à implémenter, mais aussi en matière de programmation, notamment lors de l'ajout de méthode dans la classe `Phong` qui nécessitait de donner des primitives à la classe `Material` le mot clé `virtual` pour appeler les méthodes. Le bug ci-dessous est un bug qui intervient lorsque la normale n'est pas inversée si $\cos\theta1 \lt 0$:
 
-![deuxSpheres](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/deuxSpheres.png?raw=true)
+![deuxSpheres](https://github.com/Antonneau/Mondes_3D_UB/blob/master/TD1/imgs/deuxSpheres.png?raw=true)
