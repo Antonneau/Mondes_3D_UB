@@ -36,3 +36,7 @@ TD2/ext/
 \.vscode/
 
 TD1/data/petanque\.png
+
+TD3_4/build/
+
+*.log

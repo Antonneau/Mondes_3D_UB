@@ -25,8 +25,7 @@ void Viewer::init(int w, int h){
     reshape(w,h);
     _trackball.setCamera(&_cam);
 
-    _cam.setPerspective(M_PI/2, 0.1, 100000);
-    _cam.lookAt(Vector3f(0, 0.5, 0), Vector3f(0.3, 0.3, 0.3), Vector3f(0, 1, 0));
+    _cam.lookAt(Vector3f(0, 0, 1.0), Vector3f(0, 0, 0), Vector3f(0, 1, 0));
 }
 
 void Viewer::reshape(int w, int h){
@@ -60,6 +59,7 @@ void Viewer::drawScene()
     glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, A.matrix().data());
     glUniformMatrix4fv(_shader.getUniformLocation("mat_cam"), 1, GL_FALSE, _cam.viewMatrix().data());
     glUniformMatrix4fv(_shader.getUniformLocation("mat_persp"), 1, GL_FALSE, _cam.projectionMatrix().data());
+
     int i = 1;
     if(_enableView > 0){
       glUniform1f(_shader.getUniformLocation("views"), 1);
