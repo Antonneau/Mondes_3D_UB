@@ -19,18 +19,18 @@ Maintenant qu'on a nos coordonnées barycentrique $(u, v)$, il faut vérifier ce
 
 Si toutes ces conditions sont vérifiées, on est dans le repère barycentrique. On peut commencer par calculer la normale avec la normalisation de la formule $E_1 \cdot E_2$ . Il n'y a plus qu'à définir les attributs du `Hit`, étant donné qu'on a $t$, la normale, la forme (`this`) ainsi que les textures. Cela nous donne le résultat suivant :
 
-![tw](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw.png?raw=true)
+![tw](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/tw.png?raw=true)
 
 Nous pouvons améliorer le rendu en "lissant" le bord des triangles. Il suffit de changer la valeur de la normale par $u(A - C) + v(B - C) + C$ avec A, B et C correspondant aux faces du triangle intersecté. Voici le nouveau résultat (le 1er avec `tw503.obj` et le 2ème avec `tw.obj`).
 
-![tw2](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw3.png?raw=true)
+![tw2](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/tw3.png?raw=true)
 
-![tw2time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw3_time.png?raw=true)
+![tw2time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/tw3_time.png?raw=true)
 
 
-![tw3](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw2.png?raw=true)
+![tw3](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/tw2.png?raw=true)
 
-![tw3time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw2_time.png?raw=true)
+![tw3time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/tw2_time.png?raw=true)
 
 ### BVH
 
@@ -53,17 +53,17 @@ On appelle récursivement la fonction avec le fils de gauche. Si les boites s'en
 
 Si une de ces conditions manquent ou est mal respectée, cela peut donner le type de bug suivant : 
 
-![tw_intersect](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/tw_intersect.png?raw=true)
+![tw_intersect](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/tw_intersect.png?raw=true)
 
 Cependant, si ces trois fonctions sont bien implémentées, nous obtenons un gain de temps non négligeable pour les rendus :
 
-![killeroo](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killeroo.png?raw=true)
+![killeroo](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/killeroo.png?raw=true)
 
-![killeroo_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killeroo_time.png?raw=true)
+![killeroo_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/killeroo_time.png?raw=true)
 
-![killerooGlass](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass.png?raw=true)
+![killerooGlass](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/killerooGlass.png?raw=true)
 
-![killerooGlass_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/killerooGlass_time.png?raw=true)
+![killerooGlass_time](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD2/imgs/killerooGlass_time.png?raw=true)
 
 
 ## II . Points délicats
