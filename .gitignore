@@ -1,20 +1,18 @@
 
-TD1/mds3d_td1/build/
+TD1/build/
 
-TD1/mds3d_td1/\.vscode/
+TD1/ext/
 
-TD1/mds3d_td1/ext/nanogui/resources/\.nfs0000000001dba7b300000031
+TD2/debug/
 
-TD1/newmds3d_td1\.zip
+TD2/ext/
 
-TD1/mondes_3d_td1.creator.user
+TD2/build/
+
+TD3_4/build/
+
+\.vscode/
+
+*.log
 
 *.exr
-
-TD2/mds3d_td2/build/
-
-TD2/mds3d_td2/ext/filesystem/
-
-TD2/mds3d_td2/ext/
-
-TD2/mds3d_td2/debug/
