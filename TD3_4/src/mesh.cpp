@@ -80,6 +80,8 @@ void Mesh::draw(const Shader &shd)
 
   glEnableVertexAttribArray(vertex_loc);
   
+  /* NORMAL */
+
   int normal_loc = shd.getAttribLocation("vtx_normal");
   if(normal_loc>=0)
   {
@@ -92,7 +94,8 @@ void Mesh::draw(const Shader &shd)
     glEnableVertexAttribArray(normal_loc);
   }
 
-  // Getting the color
+  /* COLOR */
+
   int color_loc = shd.getAttribLocation("vtx_color");
   if(color_loc>=0)
   {

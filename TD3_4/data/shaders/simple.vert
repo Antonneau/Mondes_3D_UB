@@ -1,19 +1,34 @@
 #version 330 core
 
 uniform float views;
+uniform float is_solar;
+
 uniform mat4 mat_obj;
 uniform mat4 mat_cam;
 uniform mat4 mat_persp;
+uniform mat3 mat_normal;
 
 in vec3 vtx_position;
 in vec3 vtx_color;
+in vec3 vtx_normal;
+uniform vec3 vtx_light;
 
 out vec3 var_color;
+out vec3 var_view;
+out vec3 var_normal;
+out vec3 var_light;
 
 void main()
 {
-  
-  gl_Position = mat_persp * (mat_cam * mat_obj * vec4(vtx_position, 1.));
-  
+  vec4 P = mat_cam * mat_obj * vec4(vtx_position, 1.);
+  var_view = -normalize(P.xyz);
+  var_normal = vtx_normal * mat_normal;
+  var_light = vtx_light * mat_normal;
   var_color = vtx_color;
+
+  if(is_solar == 1){
+    var_color = vtx_color;
+  }
+
+  gl_Position = mat_persp * P;
 }
