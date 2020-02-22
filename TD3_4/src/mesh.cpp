@@ -22,7 +22,29 @@ bool Mesh::load(const std::string& filename)
 
 void Mesh::computeNormals()
 {
-  // TODO
+  for(unsigned int i = 0; i < mVertices.size(); i++)
+    mVertices[i].normal = Vector3f(0.0, 0.0, 0.0);
+  
+  for(unsigned int i = 0; i < mFaces.size(); i++){
+    Vector3i facesIndex = mFaces[i];
+    Vertex A = mVertices[facesIndex(0)];
+    Vertex B = mVertices[facesIndex(1)];
+    Vertex C = mVertices[facesIndex(2)];
+    // xb - xa; yb - ya; zb - za
+    Vector3f AB(B.position(0) - A.position(0),
+                B.position(1) - A.position(1),
+                B.position(2) - A.position(2));
+    Vector3f AC(C.position(0) - A.position(0),
+                C.position(1) - A.position(1),
+                C.position(2) - A.position(2));
+    Vector3f norm = AB.cross(AC);
+
+    for(unsigned int j = 0; j < 3; j++)
+      mVertices[facesIndex(j)].normal += norm;
+  }
+
+  for(unsigned int i = 0; i < mVertices.size(); i++)
+    mVertices[i].normal.normalize();
 }
 
 void Mesh::initVBA()
@@ -80,6 +102,8 @@ void Mesh::draw(const Shader &shd)
 
   glEnableVertexAttribArray(vertex_loc);
   
+  /* NORMAL */
+
   int normal_loc = shd.getAttribLocation("vtx_normal");
   if(normal_loc>=0)
   {
@@ -92,7 +116,8 @@ void Mesh::draw(const Shader &shd)
     glEnableVertexAttribArray(normal_loc);
   }
 
-  // Getting the color
+  /* COLOR */
+
   int color_loc = shd.getAttribLocation("vtx_color");
   if(color_loc>=0)
   {
