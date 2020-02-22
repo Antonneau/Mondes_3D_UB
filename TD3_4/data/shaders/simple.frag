@@ -31,7 +31,7 @@ vec3 blinn(vec3 norm, vec3 view, vec3 light, vec3 diffuse, vec3 spec, float exp)
 
 void main(void) 
 {
-  vec3 blinn = blinn(var_normal, var_view, var_light, vec3(0.0, 0.0, 1.0), vtx_spec, exponent);
+  vec3 blinn = blinn(var_normal, var_view, var_light, var_color, vtx_spec, exponent);
   float I = intensity * dot(var_normal, -var_light);
 
   out_color = I * vec4(blinn, 1);

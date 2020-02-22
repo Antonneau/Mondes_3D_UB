@@ -20,6 +20,8 @@ void Viewer::init(int w, int h){
     loadShaders();
 
     if(!_mesh.load(DATA_DIR"/models/sphere.obj")) exit(1);
+    // Compute normals
+    _mesh.computeNormals();
     _mesh.initVBA();
 
     reshape(w,h);
@@ -60,10 +62,10 @@ void Viewer::drawScene()
     glUniformMatrix4fv(_shader.getUniformLocation("mat_cam"), 1, GL_FALSE, _cam.viewMatrix().data());
     glUniformMatrix4fv(_shader.getUniformLocation("mat_persp"), 1, GL_FALSE, _cam.projectionMatrix().data());
 
-    glUniform3f(_shader.getUniformLocation("vtx_light"), -0.5, -0.5, -1.0);
+    glUniform3f(_shader.getUniformLocation("vtx_light"), -5.0, -5.0, -5.0);
     glUniform3f(_shader.getUniformLocation("vtx_spec"), 1.0, 1.0, 1.0);
-    glUniform1f(_shader.getUniformLocation("exponent"), 10);
-    glUniform1f(_shader.getUniformLocation("intensity"), 1);
+    glUniform1f(_shader.getUniformLocation("exponent"), 50);
+    glUniform1f(_shader.getUniformLocation("intensity"), 0.1);
 
     Matrix3f L = _cam.viewMatrix().topLeftCorner(3, 3) * A.matrix().topLeftCorner(3, 3);
     Matrix3f N = (L.inverse()).transpose();
