@@ -4,7 +4,18 @@
 using namespace Eigen;
 
 Viewer::Viewer()
-  : _winWidth(0), _winHeight(0), _offset(0., 0.), _enableWire(-1), _enableView(-1), _thetaX(0), _thetaY(0), _thetaZ(0)
+  : _winWidth(0), 
+  _winHeight(0), 
+  _offset(0., 0.), 
+  _enableWire(-1), 
+  _enableView(-1), 
+  _thetaX(0), 
+  _thetaY(0), 
+  _thetaYEarth(0), 
+  _thetaYEarthRotate(0),
+  _thetaYMoon(0),
+  _thetaYMoonRotate(0),
+  _thetaZ(0)
 {
 }
 
@@ -19,7 +30,7 @@ Viewer::~Viewer()
 void Viewer::init(int w, int h){
     loadShaders();
 
-    if(!_mesh.load(DATA_DIR"/models/sphere.obj")) exit(1);
+    if(!_mesh.load(DATA_DIR"/models/sphere.off")) exit(1);
     // Compute normals
     _mesh.computeNormals();
     _mesh.initVBA();
@@ -45,83 +56,93 @@ void Viewer::drawScene()
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.5, 0.5, 0.5, 1);
     glClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_LINE_SMOOTH);
 
+    _shader.activate();   
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_cam"), 1, GL_FALSE, _cam.viewMatrix().data());
 
-    _shader.activate();    
+    /* SIMPLE DISPLAY */
+
     Vector3f t(0, 0.5, 0);
     Affine3f A = Translation3f(t)
-                 * AngleAxisf(_thetaX, Vector3f::UnitX())
-                 * AngleAxisf(_thetaY, Vector3f::UnitY())
-                 * AngleAxisf(_thetaZ, Vector3f::UnitZ())
-                 * Translation3f(-t);
+                * AngleAxisf(_thetaX, Vector3f::UnitX())
+                * AngleAxisf(_thetaY, Vector3f::UnitY())
+                * AngleAxisf(_thetaZ, Vector3f::UnitZ())
+                * Translation3f(-t);
 
     A(0, 3) += _offset.x();
     A(1, 3) += _offset.y();
-
-    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, A.matrix().data());
-    glUniformMatrix4fv(_shader.getUniformLocation("mat_cam"), 1, GL_FALSE, _cam.viewMatrix().data());
-    glUniformMatrix4fv(_shader.getUniformLocation("mat_persp"), 1, GL_FALSE, _cam.projectionMatrix().data());
-
-    glUniform3f(_shader.getUniformLocation("vtx_light"), -5.0, -5.0, -5.0);
-    glUniform3f(_shader.getUniformLocation("vtx_spec"), 1.0, 1.0, 1.0);
-    glUniform1f(_shader.getUniformLocation("exponent"), 50);
-    glUniform1f(_shader.getUniformLocation("intensity"), 0.1);
 
     Matrix3f L = _cam.viewMatrix().topLeftCorner(3, 3) * A.matrix().topLeftCorner(3, 3);
     Matrix3f N = (L.inverse()).transpose();
 
     glUniformMatrix3fv(_shader.getUniformLocation("mat_normal"), 1, GL_FALSE, N.data());
-
-    /* LEMMING */
-
-    /*
-    glUniform1f(_shader.getUniformLocation("is_solar"), 0);
-    int i = 1;
-    if(_enableView > 0){
-      glUniform1f(_shader.getUniformLocation("views"), 1);
-      glViewport(-_winWidth/2, 0, _winWidth, _winHeight);
-      i = 2;
-    } else {
-      glUniform1f(_shader.getUniformLocation("views"), 0);
-      glViewport(0, 0, _winWidth, _winHeight);
-    }
-    while(i > 0){
-      // Drawing the wire version
-      if (_enableWire > 0){
-        glEnable(GL_LINE_SMOOTH);
-        glUniform1f(_shader.getUniformLocation("white_filled"), 1);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDepthFunc(GL_LEQUAL);
-        _mesh.draw(_shader);
-      }
-      // Drawing the full model
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, A.matrix().data());
+    _mesh.draw(_shader);
+    if(_enableWire == 1){
+      glUniform1f(_shader.getUniformLocation("white_filled"), 1);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      _mesh.draw(_shader);
       glUniform1f(_shader.getUniformLocation("white_filled"), 0);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      _mesh.draw(_shader);
-      glViewport(_winWidth/2, 0, _winWidth, _winHeight);
-      i--;
     }
-    */
 
-    /* SOLAR SYSTEM */
-
-    glUniform1f(_shader.getUniformLocation("is_solar"), 0);
-
-    // CHANGER LA MATRICE MAT_OBJ POUR LES DEPLACEMENTS
-    // Sun
-    _mesh.draw(_shader);
+    /* SOLAR SYSTEM */ 
+    
     // Earth
-    /*A(0, 3) += 0.5;
-    A(1, 3) += 0;
-    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, A.matrix().data());
+    Affine3f AEarth = A;
+
+    _thetaYEarth += 0.02;
+    AEarth *= AngleAxisf(_thetaYEarth, Vector3f::UnitY());
+    AEarth *= Translation3f(Vector3f(2.0, 0.0, 0.0));
+    AEarth *= AngleAxisf(-_thetaYEarth, Vector3f::UnitY());
+    _thetaYEarthRotate += 0.1;
+    AEarth *= AngleAxisf((23.44 * (M_PI/180.0)), Vector3f::UnitZ());
+    AEarth *= AngleAxisf(_thetaYEarthRotate, Vector3f::UnitY());
+    AEarth = AEarth * Scaling(Vector3f(0.4, 0.4, 0.4));
+    
+    Matrix3f LEarth = _cam.viewMatrix().topLeftCorner(3, 3) * AEarth.matrix().topLeftCorner(3, 3);
+    Matrix3f NEarth = (LEarth.inverse()).transpose();
+
+    glUniformMatrix3fv(_shader.getUniformLocation("mat_normal"), 1, GL_FALSE, NEarth.data());
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, AEarth.matrix().data());
     _mesh.draw(_shader);
+    if(_enableWire == 1){
+      glUniform1f(_shader.getUniformLocation("white_filled"), 1);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      _mesh.draw(_shader);
+      glUniform1f(_shader.getUniformLocation("white_filled"), 0);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
     // Moon
-    A(0, 3) += 0;
-    A(1, 3) += 0.5;
-    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, A.matrix().data());
-    _mesh.draw(_shader);*/
+    Affine3f AMoon = A * AngleAxisf(_thetaYEarth, Vector3f::UnitY());
+    AMoon *= Translation3f(Vector3f(2.0, 0.0, 0.0));
+    _thetaYMoon += 0.2;
+    AMoon *= AngleAxisf(_thetaYMoon, Vector3f::UnitY());
+    AMoon *= Translation3f(Vector3f(0.75, 0.0, 0.0));
 
+    //AMoon *= AngleAxisf(-(23.44* (M_PI/180.0)), Vector3f::UnitZ());
+    AMoon *= AngleAxisf(-_thetaYMoon, Vector3f::UnitY());
+    _thetaYMoonRotate += 0.1;
+    AMoon *= AngleAxisf(_thetaYMoonRotate, Vector3f::UnitY());
+    AMoon *= AngleAxisf((6.68* (M_PI/180.0)), Vector3f::UnitZ());
+    AMoon = AMoon * Scaling(Vector3f(0.1, 0.1, 0.1));
 
+    Matrix3f LMoon = _cam.viewMatrix().topLeftCorner(3, 3) * AMoon.matrix().topLeftCorner(3, 3);
+    Matrix3f NMoon = (LMoon.inverse()).transpose();
+    glUniformMatrix3fv(_shader.getUniformLocation("mat_normal"), 1, GL_FALSE, NMoon.data());
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_obj"), 1, GL_FALSE, AMoon.matrix().data());
+    _mesh.draw(_shader);
+    if(_enableWire == 1){
+      glUniform1f(_shader.getUniformLocation("white_filled"), 1);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      _mesh.draw(_shader);
+      glUniform1f(_shader.getUniformLocation("white_filled"), 0);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    glUniformMatrix4fv(_shader.getUniformLocation("mat_persp"), 1, GL_FALSE, _cam.projectionMatrix().data());
     _shader.deactivate();
 }
 
@@ -199,11 +220,11 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
     {
       _thetaY -= M_PI/10;
     }
-    else if (key == GLFW_KEY_T)
+    else if (key == GLFW_KEY_Y)
     {
       _thetaZ += M_PI/10;
     }
-    else if (key == GLFW_KEY_R)
+    else if (key == GLFW_KEY_T)
     {
       _thetaZ -= M_PI/10;
     }

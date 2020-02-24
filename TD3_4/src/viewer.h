@@ -41,6 +41,10 @@ private:
     int _enableView;
     float _thetaX;
     float _thetaY;
+    float _thetaYEarth;
+    float _thetaYEarthRotate;
+    float _thetaYMoon;
+    float _thetaYMoonRotate;
     float _thetaZ;
 
     // Mouse parameters for the trackball
