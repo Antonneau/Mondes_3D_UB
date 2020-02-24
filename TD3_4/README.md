@@ -1,5 +1,5 @@
 ﻿# Mondes 3D Rapport
-### TD4/5 : Pipeline Graphique, Antonin AYOT
+### TD4/5 : Transformations, éclairage, et normales, Antonin AYOT
 
 Le calcul d'éclairage, de la camera et des normales ont été implémentées et sont fonctionnels. Par défaut, le programme se lance avec un système solaire.
 
@@ -24,7 +24,7 @@ Il s'agit d'une série d'appel à `Eigen::Translation3f` et à `Eigen::AngleAxis
 
 Cette partie nous demandait d'implémenter une fonction Blinn-Phong dans les shaders afin d'avoir de la lumière ambiante. Le calcul se fait dans le Fragment Shader pour un meilleur résultat. Tout d'abord, dans le Vertex Shader, on passe le vecteur de vue, de la normale, de la lumière ainsi que de la couleur diffuse (dans ce Shader car on possède toutes les matrices nécessaires pour les calculs).
 
-On peut ensuite faire le calcul dans le Fragment Shader, en précisant la couleur spéculaire et l'exposant (qui est la taille de la tâche spéculaire). Dans la fonction de Blinn-Phong, on calcule le terme diffus `theta` et le terme spéculaire `beta` qu'on multiplie respectivement par la couleur diffuse et la couleur spéculaire. Le résultat obtenu est ensuite multipliée par une intensité I qui est l'intensité de la lumière (optionnel cependant).
+On peut ensuite faire le calcul dans le Fragment Shader, en précisant la couleur spéculaire et l'exposant (qui est la taille de la tâche spéculaire). Dans la fonction de Blinn-Phong, on calcule le terme diffus `theta` et le terme spéculaire `beta` qu'on multiplie respectivement par la couleur diffuse et la couleur spéculaire. Le résultat obtenu est ensuite multipliée par une intensité I qui est l'intensité de la lumière. Même si l'intensité n'est pas utilisé dans le rendu, j'ai laissé le calcul de l'intensité de la lumière. Pour l'utiliser, multipliez `out_color` par `I * vec4(blinn, 1)` si vous voulez voir la différence.
 
 ![tw](https://github.com/Antonneau/Mondes_3D_UB/blob/INSTABLE/TD3_4/imgs/monkey_blinn.png?raw=true)
 

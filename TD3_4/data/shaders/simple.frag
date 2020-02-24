@@ -29,7 +29,7 @@ void main(void)
   vec3 blinn = blinn(var_normal, var_view, -var_light, var_color, vtx_spec, exponent);
   float I = intensity * dot(var_normal, -var_light);
 
-  out_color = I * vec4(blinn, 1);
+  out_color = vec4(blinn, 1);
 
   if (white_filled == 1){
       out_color = vec4(255, 255, 255, 1);
