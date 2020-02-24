@@ -1,9 +1,6 @@
 #version 330 core
 
 uniform float white_filled;
-uniform float intensity;
-uniform float exponent;
-uniform vec3 vtx_spec;
 
 in vec3 var_color;
 in vec3 var_view;
@@ -31,6 +28,10 @@ vec3 blinn(vec3 norm, vec3 view, vec3 light, vec3 diffuse, vec3 spec, float exp)
 
 void main(void) 
 {
+  vec3 vtx_spec = vec3(1.0, 1.0, 1.0);
+  float exponent = 100.0;
+  float intensity = 1.0;
+
   vec3 blinn = blinn(var_normal, var_view, var_light, var_color, vtx_spec, exponent);
   float I = intensity * dot(var_normal, -var_light);
 
