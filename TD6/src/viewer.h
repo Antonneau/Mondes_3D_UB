@@ -43,6 +43,10 @@ private:
     GLuint _tex_2d_2;
     GLuint _tex_2d_3;
 
+    GLuint _samplerId;
+    GLenum _minFilter = GL_NEAREST;
+    GLenum _magFilter = GL_NEAREST;
+
     // Mouse parameters for the trackball
     enum TrackMode
     {
