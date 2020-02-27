@@ -13,11 +13,16 @@ TD3_4/ext/
 
 TD3_4/build/
 
+TD6/build/
+
+TD6/ext/
+
 \.vscode/
 
 *.log
 
 *.exr
+
 *.mtl
 
 *.zip

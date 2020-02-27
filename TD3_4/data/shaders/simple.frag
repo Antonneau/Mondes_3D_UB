@@ -34,5 +34,4 @@ void main(void)
   if (white_filled == 1){
       out_color = vec4(255, 255, 255, 1);
   }
-
 }
