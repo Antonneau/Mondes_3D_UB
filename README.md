@@ -20,3 +20,9 @@ Cette partie contient le code et la méthode d'implémentation pour l'affichage 
 ### TD3/4/5 : Transformations, éclairage, et normales
 
 Ce fichier contient un affichage d'un petit système solaire sous OpenGL. L'affichage en fils de fer se fait par la touche `W`.
+
+### TD6 : Textures
+
+Ce fichier continet un code permettant l'affichage simple de textures.
+
+Contient des filtres mipmaps (plus proche voisin et linéaire).

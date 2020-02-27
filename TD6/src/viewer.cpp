@@ -227,10 +227,11 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
 
   if(action == GLFW_PRESS || action == GLFW_REPEAT )
   {
+    // first interpolation : mipmap pixels
+    // second interpolation : mipmap levels
+    // MINIFICATION FILTER
     if (key==GLFW_KEY_UP)
     {
-      // first interpolation : mipmap pixels
-      // second interpolation : mipmap levels
       _minFilter = GL_NEAREST_MIPMAP_NEAREST;
     }
     else if (key==GLFW_KEY_DOWN)
@@ -247,9 +248,18 @@ void Viewer::keyPressed(int key, int action, int /*mods*/)
     }
     else if (key==GLFW_KEY_PAGE_UP)
     {
-      _magFilter = GL_NEAREST;
+      _minFilter = GL_NEAREST;
     }
     else if (key==GLFW_KEY_PAGE_DOWN)
+    {
+      _minFilter = GL_LINEAR;
+    }
+    // MAGNIFICATION FILTER
+    else if (key==GLFW_KEY_N)
+    {
+      _magFilter = GL_NEAREST;
+    }
+    else if (key==GLFW_KEY_L)
     {
       _magFilter = GL_LINEAR;
     }
