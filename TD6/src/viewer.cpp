@@ -29,13 +29,7 @@ void Viewer::init(int w, int h){
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
     loadShaders();
-    if(!_mesh.load(DATA_DIR"/models/cow.obj")) exit(1);
-
-    // Object 
-    _tex_2d = SOIL_load_OGL_texture(DATA_DIR"/textures/cow.jpg",
-                                    SOIL_LOAD_AUTO,
-                                    SOIL_CREATE_NEW_ID,
-                                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+    if(!_mesh.load(DATA_DIR"/models/earth.obj")) exit(1);
 
     /* EXERCISE 3.2 TEXTURE GENERATION */
     /*
@@ -59,6 +53,14 @@ void Viewer::init(int w, int h){
         texH = std::max(1, texH/2);
     }
     */
+
+    /* NORMAL TEXTURE LOADING */
+
+    // Object 
+    _tex_2d = SOIL_load_OGL_texture(DATA_DIR"/textures/earth.jpg",
+                                    SOIL_LOAD_AUTO,
+                                    SOIL_CREATE_NEW_ID,
+                                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
 
     /* TEXTURES LAYERS FOR EARTH */
     /* De-comment this code and load the "earth.frag" shader*/

@@ -37,7 +37,7 @@ void main(void) {
   vec4 tex2D_2_color = texture(tex2D_2, v_texcoord);
   vec4 tex2D_3_color = texture(tex2D_3, v_texcoord);
   vec4 day_color = mix(tex2D_color, tex2D_2_color, tex2D_2_color);
-  vec4 night_color = mix(tex2D_3_color, tex2D_2_color, tex2D_2_color * theta);
+  vec4 night_color = mix(tex2D_3_color, tex2D_2_color, tex2D_2_color * theta-0.1);
   out_color =  mix(night_color, day_color, theta);
   
   //out_color = vec4(ambient * v_color + blinn(normalize(v_normal),normalize(v_view), lightDir, v_color, spec_color, shininess),1.0);
