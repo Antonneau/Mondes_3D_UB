@@ -50,9 +50,11 @@ protected:
       {}
       
       Vector3f position;
-      Vector3f normal;
+      Vector3f normal;  // N
       Vector4f color;
       Vector2f texcoord;
+      Vector3f tangent;  // T
+      Vector3f cotangent;  // B
     };
 
     /** The list of vertices */

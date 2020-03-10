@@ -23,8 +23,11 @@ bool Mesh::load(const std::string& filename)
 void Mesh::computeNormals()
 {
   // pass 1: set the normal to 0
-  for(unsigned int i = 0; i < mVertices.size(); i++)
+  for(unsigned int i = 0; i < mVertices.size(); i++){
     mVertices[i].normal = Vector3f(0.0, 0.0, 0.0);
+    mVertices[i].tangent = Vector3f(0.0, 0.0, 0.0);
+    mVertices[i].cotangent = Vector3f(0.0, 0.0, 0.0);
+  }
   
   // pass 2: compute face normals and accumulate
   for(unsigned int i = 0; i < mFaces.size(); i++){
@@ -32,22 +35,53 @@ void Mesh::computeNormals()
     Vertex A = mVertices[facesIndex(0)];
     Vertex B = mVertices[facesIndex(1)];
     Vertex C = mVertices[facesIndex(2)];
-    // xb - xa; yb - ya; zb - za
     Vector3f AB(B.position(0) - A.position(0),
                 B.position(1) - A.position(1),
                 B.position(2) - A.position(2));
     Vector3f AC(C.position(0) - A.position(0),
                 C.position(1) - A.position(1),
                 C.position(2) - A.position(2));
+    // N
     Vector3f norm = AB.cross(AC);
+    // T et B
+    float s0 = A.texcoord(0);
+    float t0 = A.texcoord(1);
+    float s1 = B.texcoord(0);
+    float t1 = B.texcoord(1);
+    float s2 = C.texcoord(0);
+    float t2 = C.texcoord(1);
+    Matrix<float, 3, 2> TB;
+    Matrix<float, 3, 2> q1q2;
+    q1q2 << AB, AC;
+    Matrix2f tex;
+    tex << t2-t0, s0-s2,
+           t0-t1, s1-s0;
 
-    for(unsigned int j = 0; j < 3; j++)
+    TB = (1.0 / (s1*t2-s2*t1))
+       * q1q2
+       * tex;
+    for(unsigned int j = 0; j < 3; j++){
       mVertices[facesIndex(j)].normal += norm;
+      mVertices[facesIndex(j)].tangent += TB.col(0);
+      mVertices[facesIndex(j)].cotangent += TB.col(1);
+    }
   }
-
   // pass 3: normalize
-  for(unsigned int i = 0; i < mVertices.size(); i++)
+  for(unsigned int i = 0; i < mVertices.size(); i++){
     mVertices[i].normal.normalize();
+    //Ortho-normalisation
+    Vector3f TT = mVertices[i].tangent
+                - mVertices[i].normal.dot(mVertices[i].tangent)
+                * mVertices[i].normal;
+    Vector3f BB = mVertices[i].cotangent
+                - mVertices[i].normal.dot(mVertices[i].cotangent)
+                * mVertices[i].normal;
+                - (TT.dot(mVertices[i].cotangent)
+                * TT)
+                / TT.norm();
+    mVertices[i].tangent = TT.normalized();
+    mVertices[i].cotangent = BB.normalized();
+  }
 }
 
 void Mesh::initVBA()
@@ -122,7 +156,20 @@ void Mesh::draw(const Shader &shd)
     glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(Vector3f)+sizeof(Vector4f)));
     glEnableVertexAttribArray(texcoord_loc);
   }
-
+  // T
+  int tangent_loc = shd.getAttribLocation("vtx_tangent");
+  if(tangent_loc>=0)
+  {
+    glVertexAttribPointer(tangent_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(Vector3f)+sizeof(Vector4f)+sizeof(Vector2f)));
+    glEnableVertexAttribArray(tangent_loc);
+  }
+  // B
+  int cotangent_loc = shd.getAttribLocation("vtx_bitangent");
+  if(cotangent_loc>=0)
+  {
+    glVertexAttribPointer(cotangent_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(Vector3f)+sizeof(Vector4f)+sizeof(Vector2f)+sizeof(Vector3f)));
+    glEnableVertexAttribArray(cotangent_loc);
+  }
   // send the geometry
   glDrawElements(GL_TRIANGLES, 3*mFaces.size(), GL_UNSIGNED_INT, 0);
 
@@ -132,6 +179,8 @@ void Mesh::draw(const Shader &shd)
   if(normal_loc>=0) glDisableVertexAttribArray(normal_loc);
   if(color_loc>=0)  glDisableVertexAttribArray(color_loc);
   if(texcoord_loc>=0)  glDisableVertexAttribArray(texcoord_loc);
+  if(tangent_loc>=0)  glDisableVertexAttribArray(tangent_loc);
+  if(cotangent_loc>=0)  glDisableVertexAttribArray(cotangent_loc);
 
   checkError();
 }

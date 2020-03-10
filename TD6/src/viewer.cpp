@@ -29,38 +29,20 @@ void Viewer::init(int w, int h){
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
     loadShaders();
-    if(!_mesh.load(DATA_DIR"/models/earth.obj")) exit(1);
-
-    /* EXERCISE 3.2 TEXTURE GENERATION */
-    /*
-    int texW = 256;
-    int texH = 256;
-    unsigned char colors[6][3] = { {255,  0 , 0}, {0, 255,  0 }, { 0,  0, 255},
-                                  {255, 255, 0}, {0, 255, 255}, {255, 0, 255} };
-    unsigned char data[texW*texH*3];
-    glGenTextures(1,&_tex_2d);
-    glBindTexture(GL_TEXTURE_2D, _tex_2d);
-    for(int l=0; ; ++l) {
-        for(int i=0; i<texW*texH; ++i){
-            data[3*i  ] = colors[l][0];
-            data[3*i+1] = colors[l][1];
-            data[3*i+2] = colors[l][2];
-        }
-        glTexImage2D(GL_TEXTURE_2D, l, (GLint)GL_RGB, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        if(texW==1 && texH==1)
-          break;
-        texW = std::max(1, texW/2);
-        texH = std::max(1, texH/2);
-    }
-    */
+    if(!_mesh.load(DATA_DIR"/models/earth2.obj")) exit(1);
 
     /* NORMAL TEXTURE LOADING */
-
     // Object 
-    _tex_2d = SOIL_load_OGL_texture(DATA_DIR"/textures/earth.jpg",
+    _tex_2d = SOIL_load_OGL_texture(DATA_DIR"/textures/earth_normal.jpg",
                                     SOIL_LOAD_AUTO,
                                     SOIL_CREATE_NEW_ID,
                                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+    
+    _tex_2d_2 = SOIL_load_OGL_texture(DATA_DIR"/textures/earth.jpg",
+                                    SOIL_LOAD_AUTO,
+                                    SOIL_CREATE_NEW_ID,
+                                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+    
 
     /* TEXTURES LAYERS FOR EARTH */
     /* De-comment this code and load the "earth.frag" shader*/
@@ -117,6 +99,13 @@ void Viewer::drawScene()
     glBindSampler(_tex_2d, _samplerId);
     glUniform1i(_shader.getUniformLocation("tex2D"), _tex_2d);
 
+    /* TEXTURE LAYER FOR ROCKS */
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, _tex_2d_2);
+    glBindSampler(_tex_2d_2, _samplerId);
+    glUniform1i(_shader.getUniformLocation("tex2D_2"), _tex_2d_2);
+    
+
     /* TEXTURES LAYERS FOR EARTH */
     /* De-comment this code and load the "earth.frag" shader*/
     /*
@@ -139,7 +128,7 @@ void Viewer::drawScene()
     Matrix3f matN = matLocal2Cam.topLeftCorner<3,3>().inverse().transpose();
     glUniformMatrix3fv(_shader.getUniformLocation("normal_mat"),1,GL_FALSE,matN.data());
 
-    Vector3f lightDir = Vector3f(1,0,1).normalized();
+    Vector3f lightDir = Vector3f(1,1,1).normalized();
     lightDir = (_cam.viewMatrix().topLeftCorner<3,3>() * lightDir).normalized();
     glUniform3fv(_shader.getUniformLocation("lightDir"),1,lightDir.data());
 
@@ -162,7 +151,7 @@ void Viewer::loadShaders()
     - "simple.frag", displaying a single object
     - "earth.frag", display the multiple layers of the earth
     */
-    _shader.loadFromFiles(DATA_DIR"/shaders/simple.vert", DATA_DIR"/shaders/simple.frag");
+    _shader.loadFromFiles(DATA_DIR"/shaders/simple.vert", DATA_DIR"/shaders/normal_map.frag");
     checkError();
 }
 
