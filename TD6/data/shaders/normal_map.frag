@@ -28,7 +28,7 @@ vec3 blinn(vec3 n, vec3 v, vec3 l, vec3 dCol, vec3 sCol, float s)
 }
 
 void main(void) {
-  float ambient = 0.2;
+  float ambient = 0.0;
   float shininess = 50;
   vec3 spec_color = vec3(1,1,1);
 
@@ -36,12 +36,9 @@ void main(void) {
   vec3 v_t = normalize(v_tangent);
   vec3 v_b = normalize(v_bitangent);
   vec3 v_n = normalize(v_normal);
-  vec3 c1 = vec3(v_t.x, v_b.x, v_n.x);
-  vec3 c2 = vec3(v_t.y, v_b.y, v_n.y);
-  vec3 c3 = vec3(v_t.z, v_b.z, v_n.z);
-  mat3 tbnv_matrix = mat3(c1, c2, c3);
+  mat3 tbnv_matrix = transpose(mat3(v_t, v_b, v_n));
 
-  out_color = vec4(ambient * v_color + blinn(normal_map, tbnv_matrix*normalize(v_view), tbnv_matrix*lightDir, v_color, spec_color, shininess),1.0);
-  //out_color = vec4(v_t, 1.);
+  out_color = vec4(ambient * v_color + blinn(normal_map, tbnv_matrix*normalize(v_view), tbnv_matrix*lightDir, texture(tex2D_2, v_texcoord).xyz, spec_color, shininess),1.0);
+  //out_color = vec4(v_b, 1.);
 
 }

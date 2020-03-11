@@ -128,7 +128,7 @@ void Viewer::drawScene()
     Matrix3f matN = matLocal2Cam.topLeftCorner<3,3>().inverse().transpose();
     glUniformMatrix3fv(_shader.getUniformLocation("normal_mat"),1,GL_FALSE,matN.data());
 
-    Vector3f lightDir = Vector3f(1,1,1).normalized();
+    Vector3f lightDir = Vector3f(1,0,1).normalized();
     lightDir = (_cam.viewMatrix().topLeftCorner<3,3>() * lightDir).normalized();
     glUniform3fv(_shader.getUniformLocation("lightDir"),1,lightDir.data());
 

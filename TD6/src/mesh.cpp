@@ -54,12 +54,10 @@ void Mesh::computeNormals()
     Matrix<float, 3, 2> q1q2;
     q1q2 << AB, AC;
     Matrix2f tex;
-    tex << t2-t0, s0-s2,
-           t0-t1, s1-s0;
+    tex << s1-s0, s2-s0,
+           t1-t0, t2-t0;
 
-    TB = (1.0 / (s1*t2-s2*t1))
-       * q1q2
-       * tex;
+    TB = q1q2 * tex.inverse();
     for(unsigned int j = 0; j < 3; j++){
       mVertices[facesIndex(j)].normal += norm;
       mVertices[facesIndex(j)].tangent += TB.col(0);
